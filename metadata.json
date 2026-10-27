@@ -1,0 +1,6 @@
+{
+  "name": "Cortex",
+  "description": "Cortex peer learning and tutoring platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

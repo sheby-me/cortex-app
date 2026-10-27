@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    .bg-rect { fill: transparent; }
+    .logo-c { fill: #101828; }
+    .logo-cap { stroke: #101828; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .logo-dot { fill: #101828; }
+
+    @media (prefers-color-scheme: dark) {
+      .logo-c { fill: #f8fafc; }
+      .logo-cap { stroke: #f8fafc; }
+      .logo-dot { fill: #f8fafc; }
+    }
+  </style>
+
+  {/* Background container */}
+  <rect width="100" height="100" rx="22" class="bg-rect" />
+
+  <g transform="translate(0, 2)">
+    {/* Stylized Bold C */}
+    <path
+      class="logo-c"
+      d="M 68,44
+         C 61,35 48,33 36,40
+         C 22,48 18,65 24,79
+         C 30,92 46,97 60,93
+         C 70,90 77,81 80,73
+         L 67,68
+         C 64,74 58,79 51,80
+         C 40,81 31,75 28,65
+         C 25,54 30,44 40,40
+         C 48,37 57,39 62,45
+         Z"
+    />
+
+    {/* Transparent Classy Graduation Cap */}
+    <g class="logo-cap">
+      {/* Diamond Top Plate */}
+      <polygon points="58,12 86,21 60,31 32,22" stroke-width="3.5" />
+
+      {/* Skullcap Crown Band */}
+      <path d="M 40,25 C 40,35 78,35 78,25 L 78,30 C 78,38 40,38 40,30 Z" stroke-width="2.8" />
+
+      {/* Band Windows */}
+      <path d="M 46,29 L 52,29 L 52,33 L 46,33 Z M 66,29 L 72,29 L 72,33 L 66,33 Z" stroke-width="2" />
+
+      {/* Center Button */}
+      <circle cx="59" cy="21.5" r="2.2" class="logo-dot" stroke="none" />
+
+      {/* Tassel Cord & Fringe */}
+      <path d="M 59,21.5 C 70,22.5 81,25 83,30 L 83,43" stroke-width="2.2" />
+      <circle cx="83" cy="43" r="1.8" class="logo-dot" stroke="none" />
+      <path d="M 80,45 L 86,45 M 79,48 L 87,48 M 80,51 L 86,51 M 83,45 L 83,53" stroke-width="2" />
+    </g>
+  </g>
+</svg>

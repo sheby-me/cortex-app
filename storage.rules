@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// Cortex — Firebase Storage rules. See README for the folder layout.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // verified mailbox required (Google accounts always are); tutor-proof uploads happen at sign-up, before verification
+    function authed() { return request.auth != null; }
+    function signedIn() { return request.auth != null && request.auth.token.email_verified == true; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isAdmin() {
+      return signedIn() && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+    function isImage() { return request.resource.contentType.matches('image/(jpeg|png|webp|gif)'); }
+    function isImageOrPdf() { return isImage() || request.resource.contentType == 'application/pdf'; }
+    function under(mb) { return request.resource.size < mb * 1024 * 1024; }
+
+    match /avatars/{uid}/{file} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) && isImage() && under(5);
+      allow delete: if isOwner(uid);
+    }
+    match /covers/{uid}/{file} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) && isImage() && under(8);
+      allow delete: if isOwner(uid);
+    }
+    match /posts/{uid}/{postId}/{file} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) && isImage() && under(8);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+    // Chat files are readable only by conversation participants.
+    match /chat/{convId}/{file} {
+      function isParticipant() {
+        return signedIn() && request.auth.uid in firestore.get(/databases/(default)/documents/conversations/$(convId)).data.participants;
+      }
+      allow read: if isParticipant();
+      allow write: if isParticipant() && isImageOrPdf() && under(10);
+    }
+    // Degree proofs: the applicant uploads, only the applicant and admins can read.
+    match /tutor-proofs/{uid}/{file} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow write: if authed() && request.auth.uid == uid && isImageOrPdf() && under(10);
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}
