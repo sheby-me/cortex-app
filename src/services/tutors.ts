@@ -10,6 +10,7 @@
  *      │                          │                                  └─ (72 h with no response) tutor may auto-complete
  *      ├─ tutor declines ─▶ declined      student cancels (pending / accepted) ─▶ cancelled        (student claims refund)
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   doc,
@@ -158,13 +159,13 @@ export async function updateTutorProfile(
   const payload: Record<string, unknown> = { ...updates, updatedAt: serverTimestamp() };
   if (updates.rates) {
     for (const [k, v] of Object.entries(updates.rates)) {
-      if (!Number.isFinite(v) || v < 0 || v > 1000) throw new Error(`Invalid rate for ${k}.`);
+      if (!Number.isFinite(v) || v < 0 || v > 1000) throw new UserError(`Invalid rate for ${k}.`);
     }
   }
   if (updates.availability) {
     for (const s of updates.availability) {
       if (s.day < 0 || s.day > 6 || !/^\d{2}:\d{2}$/.test(s.start) || !/^\d{2}:\d{2}$/.test(s.end) || s.start >= s.end) {
-        throw new Error("Each availability slot needs a valid day and a start time before its end time.");
+        throw new UserError("Each availability slot needs a valid day and a start time before its end time.");
       }
     }
   }
@@ -217,13 +218,13 @@ export async function requestSession(params: {
 }): Promise<string> {
   const { student, tutor, mode } = params;
   const topic = params.topic.trim();
-  if (!topic) throw new Error("Please enter a topic or question for the tutor session.");
-  if (student.uid === tutor.id) throw new Error("You can't book a session with yourself.");
+  if (!topic) throw new UserError("Please enter a topic or question for the tutor session.");
+  if (student.uid === tutor.id) throw new UserError("You can't book a session with yourself.");
 
   const credits = tutor.rates[mode];
   const fresh = await getUser(student.uid);
   if (!fresh || (fresh.credits ?? 0) < credits) {
-    throw new Error(`You need ${credits} credits for this session (balance: ${fresh?.credits ?? 0}).`);
+    throw new UserError(`You need ${credits} credits for this session (balance: ${fresh?.credits ?? 0}).`);
   }
 
   const ref = doc(collection(db, "tutor_sessions"));
@@ -336,7 +337,7 @@ export async function markDelivered(session: Session, tutor: Partial<UserDoc> & 
 /** Student confirms delivery and rates 1-5. Updates the tutor's rating aggregates in the same batch. */
 export async function completeAndRate(session: Session, student: Partial<UserDoc> & { uid: string }, rating: number, review: string) {
   const r = Math.round(rating);
-  if (r < 1 || r > 5) throw new Error("Please choose a rating between 1 and 5.");
+  if (r < 1 || r > 5) throw new UserError("Please choose a rating between 1 and 5.");
   const batch = writeBatch(db);
   batch.update(doc(db, "tutor_sessions", session.id), {
     status: "completed",

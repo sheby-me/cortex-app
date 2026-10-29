@@ -37,6 +37,7 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "@/integrations/firebase/client";
 import { claimUsername, ensureUserDocument } from "@/services/users";
 import { sendVerification } from "@/services/verification";
+import { RequiredMark } from "@/components/required-mark";
 import { checkEmail } from "@/lib/email-policy";
 import { Eye as EyeIcon, EyeOff as EyeOffIcon } from "lucide-react";
 import { uploadFile, DOC_TYPES } from "@/services/storage";
@@ -327,26 +328,12 @@ function RoleForm({ role }: { role: Role }) {
     setBusy(false);
   }
 
-  /** Google sign-ups have no username step, so derive a free one from the email (retries on collisions). */
-  async function autoClaimUsername(uid: string, seed: string) {
-    const base = cleanUsername(seed).slice(0, 14) || "learner";
-    for (let i = 0; i < 4; i++) {
-      const candidate = i === 0 ? base : `${base}${Math.floor(1000 + Math.random() * 9000)}`;
-      try {
-        await claimUsername(uid, candidate);
-        return;
-      } catch (err) {
-        if ((err as Error).message !== "USERNAME_TAKEN") throw err;
-      }
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
 
     if (mode === "signup" && canSignup) {
-      const val = validateSignUp({ email, password, name, role, credentials, bio });
+      const val = validateSignUp({ email, password, name, username, role, credentials, bio });
       if (!val.valid && val.error) {
         setFormError(val.error);
         toast.error(val.error);
@@ -486,7 +473,6 @@ function RoleForm({ role }: { role: Role }) {
       if (!existing.exists()) {
         const display = u.displayName ?? email.split("@")[0];
         await ensureUserDocument(u, { displayName: display, tutorPending: role === "tutor" });
-        await autoClaimUsername(u.uid, email.split("@")[0] || display);
         if (role === "tutor") {
           await setDoc(doc(db, "tutor_applications", u.uid), {
             userId: u.uid,
@@ -553,7 +539,10 @@ function RoleForm({ role }: { role: Role }) {
       {mode === "signup" && (
         <>
           <div>
-            <Label htmlFor={`${role}-name`}>Full name</Label>
+            <Label htmlFor={`${role}-name`}>
+              Full name
+              <RequiredMark />
+            </Label>
             <Input
               id={`${role}-name`}
               name="name"
@@ -567,7 +556,10 @@ function RoleForm({ role }: { role: Role }) {
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <Label htmlFor={`${role}-username`}>Unique Username</Label>
+              <Label htmlFor={`${role}-username`}>
+              Unique Username
+              <RequiredMark />
+            </Label>
               <span className="text-xs text-muted-foreground">
                 Required for friends & search
               </span>
@@ -627,7 +619,7 @@ function RoleForm({ role }: { role: Role }) {
       {mode === "signup" && role === "tutor" && (
         <>
           <div>
-            <Label>Credentials & Qualifications</Label>
+            <Label>Credentials & Qualifications<RequiredMark /></Label>
             <Input aria-label="e.g. MSc Physics, BS Computer Science"
               value={credentials}
               onChange={(e) => setCredentials(e.target.value)}
@@ -638,7 +630,7 @@ function RoleForm({ role }: { role: Role }) {
           </div>
 
           <div>
-            <Label>Short bio</Label>
+            <Label>Short bio<RequiredMark /></Label>
             <Textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
@@ -790,7 +782,10 @@ function RoleForm({ role }: { role: Role }) {
       )}
 
       <div>
-        <Label htmlFor={`${role}-email`}>Email</Label>
+        <Label htmlFor={`${role}-email`}>
+          Email
+          <RequiredMark />
+        </Label>
         <div className="relative mt-1.5">
           <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
           <Input
@@ -827,7 +822,10 @@ function RoleForm({ role }: { role: Role }) {
       </div>
       <div>
         <Label htmlFor={`${role}-password`} className="flex items-center justify-between">
-          <span>Password</span>
+          <span>
+            Password
+            <RequiredMark />
+          </span>
           {mode === "signup" ? (
             <span className="text-xs text-muted-foreground font-normal">8+ characters, letters &amp; numbers</span>
           ) : (

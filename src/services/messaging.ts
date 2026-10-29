@@ -17,6 +17,7 @@
  *   conversations/{id}/messages/{messageId}
  *     senderId, text, attachments[], createdAt
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   arrayRemove,
   arrayUnion,
@@ -131,7 +132,7 @@ export async function getOrCreateDirectConversation(
   me: Partial<UserDoc> & { uid: string },
   other: Partial<UserDoc> & { uid: string },
 ): Promise<string> {
-  if (me.uid === other.uid) throw new Error("You can't message yourself.");
+  if (me.uid === other.uid) throw new UserError("You can't message yourself.");
   const id = directConversationId(me.uid, other.uid);
   const ref = doc(db, "conversations", id);
   const existing = await getDoc(ref);
@@ -311,7 +312,7 @@ export async function sendMessage(params: {
   const text = params.text.trim();
   const attachments = params.attachments ?? [];
   if (!text && attachments.length === 0) return;
-  if (text.length > 4000) throw new Error("Message is too long (max 4000 characters).");
+  if (text.length > 4000) throw new UserError("Message is too long (max 4000 characters).");
 
   const convRef = doc(db, "conversations", conversation.id);
   const msgRef = doc(collection(db, "conversations", conversation.id, "messages"));

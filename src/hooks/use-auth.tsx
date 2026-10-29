@@ -63,6 +63,10 @@ export type UserProfile = {
   showLeaderboard?: boolean;
   sosAvailable?: boolean;
   onboarded?: boolean;
+  institutionId?: string | null;
+  universityVerified?: boolean;
+  verifiedUniversityId?: string | null;
+  verifiedUniversityName?: string | null;
   creditsEarned?: number;
   teachingMinutes?: number;
   studyStreak?: number;

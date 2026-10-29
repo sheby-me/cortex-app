@@ -1,3 +1,4 @@
+import { UserError } from "@/lib/friendly-errors";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CortexLogo } from "@/components/cortex-logo";
 import { useCallback, useEffect, useState } from "react";
@@ -145,7 +146,7 @@ function AdminLogin() {
         if (!cred.user.emailVerified) {
           await sendEmailVerification(cred.user).catch(() => undefined);
           await fbSignOut(auth);
-          throw new Error("Please verify your email first (we just re-sent the link), then sign in again.");
+          throw new UserError("Please verify your email first (we just re-sent the link), then sign in again.");
         }
         try {
           // Succeeds only if this verified email is on the allow-list.
@@ -156,7 +157,7 @@ function AdminLogin() {
           });
         } catch {
           await fbSignOut(auth);
-          throw new Error("This email is not authorized for admin access.");
+          throw new UserError("This email is not authorized for admin access.");
         }
       }
       navigate({ to: "/admin" });
@@ -332,7 +333,7 @@ function AdminPanel() {
     if (!proof) return;
     try {
       const url = proof.path ? await getDownloadURL(storageRef(storage, proof.path)) : (proof.data ?? "");
-      if (!url) throw new Error("This application has no readable document.");
+      if (!url) throw new UserError("This application has no readable document.");
       setSelectedDoc({
         name: proof.name,
         type: proof.type,
@@ -376,7 +377,7 @@ function AdminPanel() {
   async function approve(app: TutorApp) {
     try {
       const applicant = await getUser(app.userId);
-      if (!applicant) throw new Error("Applicant account no longer exists.");
+      if (!applicant) throw new UserError("Applicant account no longer exists.");
       const rates = {
         materials: app.rates?.materials ?? 15,
         asyncQa: app.rates?.asyncQa ?? 25,

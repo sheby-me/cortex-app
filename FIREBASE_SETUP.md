@@ -102,3 +102,52 @@ self-reported/cosmetic and grant no credits.
 
 ## 9. What "no vulnerabilities" can honestly mean
 Nothing here has been penetration-tested or run, and no software is vulnerability-free. Before launch: run `npm audit` and update dependencies, run the rules in the emulator with negative tests (e.g. an unverified user, a user editing someone else's data, forging credits), enable App Check and billing alerts, and review the Known limitations list in §6.
+
+---
+
+# v3 — profile, verification, help assistant and error handling
+
+## 10. What changed in v3 (and the one correction to earlier advice)
+- **User-facing errors never show Firebase codes or internals.** `src/lib/friendly-errors.ts` maps everything to plain sentences and logs the real error to the browser console only (`[Cortex error]`). This replaces the "append the error code" behaviour from v2. For Google sign-in on an unauthorised domain, users see a neutral message and the console prints the exact hostname to add under Authentication → Settings → Authorized domains.
+- **Permission bug fixed in the rules.** Reading a document that does *not exist yet* used to be denied (the rule touched `resource.data` on a null resource). Our code does exactly that before sending a buddy request, opening a chat, joining a group via invite, and reporting a post, so those flows failed with "You don't have permission". Rules for `conversations`, `friend_requests`, `group_invites`, `groups`, `reports`, `sos offers` and `tutor_sessions` now allow `resource == null` reads. **Redeploy the rules.**
+- **Usernames:** globally unique via the transactional `usernames/{handle}` lock, live availability check while typing, reserved names blocked (client + rules), and a unique username is mandatory — `/onboarding` can't be skipped, and the app shell redirects there until a username and the required fields exist (Google sign-ups no longer get an auto-generated name).
+- **Names** (`src/lib/name-policy.ts`): letters (any script, so Urdu works), single spaces, hyphen and apostrophe only; digits, emoji, symbols, double spaces and repeated-letter junk are rejected at sign-up, onboarding, profile and settings. Rules can't express this reliably, so it's enforced in the app (a determined user calling Firestore directly could bypass it).
+- **Required fields** show a red `*` (and "required" for screen readers) on sign-up, onboarding, profile, settings, groups, SOS, quizzes, roadmaps and tutor booking. Required for a profile: name, username, country, school/university, academic level, timezone.
+- **Country** and **school/university** are searchable alphabetical dropdowns (196 countries; 225 institutions — 206 universities with official email domains, plus well-known Pakistani schools). Unlisted places can be typed ("Use …"). Admins can add institutions in the Firestore `universities` collection (`{name, country, type, domains[]}`) with no redeploy.
+- **Verified Student badge:** Settings → Student verification. The email's domain must belong to the university the user selected; a code is emailed to that address (Cloud Functions `startUniversityVerification` / `confirmUniversityVerification`); the badge is set only by the function; the address is reserved so it can verify just one account; a verified user can't change their university. The sign-in email is accepted instantly if it already matches and is verified.
+- **"Ask AI" button** now opens *Cortex Help*, which answers only questions about using Cortex (grounded in `src/lib/app-guide.ts`). Off-topic questions are refused in the browser and again on the server before any model call; if the AI is unreachable the answer comes from the built-in guide. The general chatbot remains on the *AI Assistant* page in the menu.
+- **Banner / avatar:** crop (drag + zoom, live preview), resize (1600 px / 512 px), JPEG compression (~450 KB / ~150 KB), replace and remove, in Profile and Settings.
+- **Share profile:** menu with Copy link, Open link and the Web Share sheet; links go to the new public profile page `/u/<username>` (signed-in users only).
+- **Invites:** typing a name or @username shows live Firestore suggestions (accessible combobox, chips) when creating a group and when inviting more people.
+- **Create Room** = *Groups → create* (public/private, schedule, invites, its own chat). It uses the corrected rules above.
+
+## 11. Tests (both sides of each interaction)
+`tests/firestore.rules.test.mjs` runs against the Firestore emulator as separate users (A sends → B receives → B accepts → both are buddies; A messages → B reads, strangers can't; SOS create → offer → accept → resolve → reward once; posts/likes/comments/reports; groups; tutor pricing; notifications; admin; verification and credit-forgery attempts):
+```
+npm install
+npm i -D @firebase/rules-unit-testing
+npm run test:rules
+```
+**These tests and the app have not been run by the author** (no install or network access where this was written). Run them first; a failure points at the exact rule to fix. UI-level end-to-end checks (two browsers) still need doing by hand — see §14.
+
+## 12. Cloud Functions in the project (`/functions`)
+| Function | Purpose |
+|---|---|
+| `sendEmailOtp` / `verifyEmailOtp` | optional 6-digit sign-up code (`VITE_EMAIL_OTP=true`) |
+| `startUniversityVerification` / `confirmUniversityVerification` | student email verification → Verified Student badge |
+Both need the Blaze plan and three secrets: `SMTP_URL`, `MAIL_FROM`, `OTP_PEPPER`. `functions/src/universities.json` is a copy of `src/data/universities.json` — if you edit one, copy it to the other. Extra institutions added in Firestore are read by the function too.
+
+## 13. Firestore collections, indexes, rules and storage — what's new in v3
+- **New collections:** `universities` (admin-managed, readable by signed-in users); function-only collections `email_otps`, `uni_otps`, `verified_emails` (no client access — the default-deny rule covers them).
+- **New user fields:** `institutionId`; function-written `universityVerified`, `verifiedUniversityId`, `verifiedUniversityName`, `verifiedAt` (protected in rules).
+- **Indexes:** no new composite indexes in v3 (v2's `reports(status, createdAt)` is already in `firestore.indexes.json`).
+- **Rules changes:** null-resource reads; reserved usernames; verification fields write-protected; verified users can't change university; posts can't forge `author.verified`; `universities` collection; plus v2's verified-email gate. **Storage rules:** unchanged (images are cropped and compressed client-side before upload; limits stay 5 MB / 8 MB).
+
+## 14. Remaining manual setup and things that need outside services
+1. Deploy rules, indexes and storage rules; `cd functions && npm install`; set the three secrets; `firebase deploy --only functions` (**SMTP provider required** — SendGrid, Resend, Mailgun, Amazon SES or a mailbox).
+2. **Verify the university list.** Domains were written from general knowledge and have not been checked against each university; some universities give students sub-domains or different domains (subdomains are accepted automatically). Spot-check the ones you care about (UMT, LUMS, UET, NUST, FAST, COMSATS…) and fix `src/data/universities.json` + `functions/src/universities.json`, or override via the `universities` collection.
+3. Run the rules tests, then test with two real accounts in two browsers: buddy request both ways, messaging with read receipts, SOS escrow, community, group invite via autocomplete, Verified Student flow, password reset, Google sign-in from your Vercel domain.
+4. Firebase console: authorize your Vercel domain, enable Email enumeration protection and a password policy, enable App Check.
+5. Existing users created before v3 who have no username are sent to `/onboarding` on next sign-in.
+6. Needs external services: **Google Gemini** (`GEMINI_API_KEY`) for AI features; **SMTP** for codes; Firebase **Blaze** plan for Functions.
+7. Known gaps: name rules and the 4-image/size limits are partly client-side; the community "post title" field has no visible `*`; the in-memory AI rate limit is per serverless instance; deleting accounts leaves orphaned posts/messages; notification spam still needs a Cloud Function + App Check.

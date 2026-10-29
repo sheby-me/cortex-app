@@ -8,6 +8,7 @@
  * Request ids are deterministic (`req_${from}_${to}`) so a duplicate send is an overwrite, not a second request,
  * and notifications can be addressed predictably (`notif_${requestId}`).
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   deleteDoc,
@@ -144,7 +145,7 @@ export async function sendBuddyRequest(
 
 /** Accept: create both friend docs, delete the request, tell the sender — one atomic batch. */
 export async function acceptBuddyRequest(request: FriendRequestData, actingUid: string): Promise<void> {
-  if (request.toUid !== actingUid) throw new Error("Only the recipient can accept this request.");
+  if (request.toUid !== actingUid) throw new UserError("Only the recipient can accept this request.");
   const { fromUser, toUser, fromUid, toUid, id } = request;
 
   const batch = writeBatch(db);

@@ -7,6 +7,7 @@
  * Credits are escrowed from the requester when the request is created (see credits.ts for the security model),
  * paid to the helper when the request is resolved, and refunded to the requester when it is cancelled.
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   doc,
@@ -109,15 +110,15 @@ export async function createSosRequest(params: {
   const { requester } = params;
   const title = params.title.trim();
   const credits = Math.floor(Number(params.credits));
-  if (!title) throw new Error("Please enter a question or problem title.");
+  if (!title) throw new UserError("Please enter a question or problem title.");
   if (!Number.isFinite(credits) || credits < MIN_SOS_CREDITS || credits > MAX_SOS_CREDITS) {
-    throw new Error(`Credits must be between ${MIN_SOS_CREDITS} and ${MAX_SOS_CREDITS}.`);
+    throw new UserError(`Credits must be between ${MIN_SOS_CREDITS} and ${MAX_SOS_CREDITS}.`);
   }
 
   // Fresh balance check (the profile in React state may be stale). Rules re-verify server-side.
   const fresh = await getUser(requester.uid);
   if (!fresh || (fresh.credits ?? 0) < credits) {
-    throw new Error(`You need ${credits} credits to post this request (balance: ${fresh?.credits ?? 0}).`);
+    throw new UserError(`You need ${credits} credits to post this request (balance: ${fresh?.credits ?? 0}).`);
   }
 
   const sosRef = doc(collection(db, "sos_requests"));
@@ -279,8 +280,8 @@ export async function offerHelp(
   note: string,
 ): Promise<void> {
   const text = note.trim();
-  if (!text) throw new Error("Please include a short note on how you can help.");
-  if (helper.uid === request.requesterId) throw new Error("You can't offer help on your own request.");
+  if (!text) throw new UserError("Please include a short note on how you can help.");
+  if (helper.uid === request.requesterId) throw new UserError("You can't offer help on your own request.");
 
   const batch = writeBatch(db);
   batch.set(doc(db, "sos_requests", request.id, "offers", helper.uid), {

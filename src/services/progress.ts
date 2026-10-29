@@ -6,6 +6,7 @@
  *   users/{uid}/quizProgress/{quizId}                   attempts, best/last score
  *   users/{uid}/roadmapProgress/{roadmapId}             completed milestone indexes
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   doc,
@@ -192,7 +193,7 @@ export function subscribeRoadmapProgress(uid: string, onData: (p: Record<string,
 
 /** Toggle one milestone and recompute the percentage atomically. */
 export async function toggleMilestone(uid: string, roadmapId: string, index: number, totalMilestones: number): Promise<RoadmapProgress> {
-  if (index < 0 || index >= totalMilestones) throw new Error("Invalid milestone.");
+  if (index < 0 || index >= totalMilestones) throw new UserError("Invalid milestone.");
   const ref = doc(db, "users", uid, "roadmapProgress", roadmapId);
   return runTransaction(db, async (tx) => {
     const snap = await tx.get(ref);

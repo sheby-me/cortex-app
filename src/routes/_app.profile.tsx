@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, useRef } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +63,14 @@ import { ACHIEVEMENTS, subscribeAchievements } from "@/services/gamification";
 import { subscribeBuddies, type FriendUserData } from "@/services/buddies";
 import { leaveReview, subscribeProfileReviews, type ProfileReview } from "@/services/reviews";
 import { subscribeMySessions, type Session } from "@/services/tutors";
-import { getClassmates, uploadAvatar, uploadCover, type UserDoc } from "@/services/users";
+import { getClassmates, removeAvatar, removeCover, uploadAvatar, uploadCover, type UserDoc } from "@/services/users";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
+import { VerifiedBadge } from "@/components/verified-badge";
+import { RequiredMark } from "@/components/required-mark";
+import { CountrySelect } from "@/components/country-select";
+import { InstitutionSelect } from "@/components/institution-select";
+import { validatePersonName } from "@/lib/name-policy";
+import { shareProfile } from "@/lib/share-profile";
 import { errorMessage, timeAgo } from "@/services/common";
 import { sendFriendRequest } from "@/lib/friends-service";
 import {
@@ -99,6 +112,7 @@ export function ProfilePage() {
     (profile.gradeLevel as GradeLevel) || "Undergraduate",
   );
   const [editInst, setEditInst] = useState(profile.institution || "");
+  const [editInstId, setEditInstId] = useState<string | null>((profile.institutionId as string | null) ?? null);
   const [editSem, setEditSem] = useState(profile.semesterOrYear || "");
   const [editDeg, setEditDeg] = useState(profile.degreeOrStream || "");
   const [editAbout, setEditAbout] = useState(profile.about || "");
@@ -113,67 +127,80 @@ export function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [uploadPct, setUploadPct] = useState<number | null>(null);
 
-  const previewFile = (file: File, apply: (url: string) => void, remember: (f: File) => void, maxMb: number) => {
+  // Every picked image is cropped first. `mode` decides what happens with the cropped result:
+  //  "dialog" → keep it as a preview until "Save"   |   "direct" → upload straight away (header camera buttons)
+  const [crop, setCrop] = useState<{ file: File; kind: "avatar" | "cover"; mode: "dialog" | "direct" } | null>(null);
+  const [removeAvatarFlag, setRemoveAvatarFlag] = useState(false);
+  const [removeCoverFlag, setRemoveCoverFlag] = useState(false);
+
+  const startCrop = (file: File | undefined, kind: "avatar" | "cover", mode: "dialog" | "direct") => {
+    if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please choose an image file.");
+      toast.error("Please choose an image file (JPG, PNG or WebP).");
       return;
     }
-    if (file.size > maxMb * 1024 * 1024) {
-      toast.error(`Image must be under ${maxMb}MB.`);
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("That image is too large. Please choose one under 15 MB.");
       return;
     }
-    remember(file);
-    apply(URL.createObjectURL(file));
+    setCrop({ file, kind, mode });
+  };
+
+  const handleCropped = async (cropped: File) => {
+    const c = crop;
+    setCrop(null);
+    if (!c || !user) return;
+    if (c.mode === "dialog") {
+      if (c.kind === "avatar") {
+        setPendingAvatar(cropped);
+        setEditAvatar(URL.createObjectURL(cropped));
+        setRemoveAvatarFlag(false);
+      } else {
+        setPendingCover(cropped);
+        setEditCover(URL.createObjectURL(cropped));
+        setRemoveCoverFlag(false);
+      }
+      return;
+    }
+    try {
+      setUploadPct(0);
+      if (c.kind === "avatar") await uploadAvatar(user.uid, cropped, profile.avatarUrl, setUploadPct);
+      else await uploadCover(user.uid, cropped, profile.coverImageUrl, setUploadPct);
+      toast.success(c.kind === "avatar" ? "Profile picture updated!" : "Cover banner updated!");
+    } catch (err) {
+      toast.error(errorMessage(err, "Couldn't upload that image. Please try again."));
+    } finally {
+      setUploadPct(null);
+    }
   };
 
   const handleAvatarFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) previewFile(file, setEditAvatar, setPendingAvatar, 5);
+    startCrop(e.target.files?.[0], "avatar", "dialog");
+    e.target.value = "";
   };
-
   const handleCoverFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) previewFile(file, setEditCover, setPendingCover, 8);
+    startCrop(e.target.files?.[0], "cover", "dialog");
+    e.target.value = "";
+  };
+  const handleDirectHeaderAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    startCrop(e.target.files?.[0], "avatar", "direct");
+    e.target.value = "";
+  };
+  const handleDirectHeaderCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    startCrop(e.target.files?.[0], "cover", "direct");
+    e.target.value = "";
   };
 
-  // Direct (header camera buttons): upload immediately.
-  const handleDirectHeaderAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !user) return;
-    if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
-      toast.error("Please choose an image under 5MB.");
-      return;
-    }
+  const handleRemoveCoverNow = async () => {
+    if (!user) return;
     try {
-      setUploadPct(0);
-      await uploadAvatar(user.uid, file, profile.avatarUrl, setUploadPct);
-      toast.success("Profile picture updated!");
+      await removeCover(user.uid, profile.coverImageUrl);
+      toast.success("Cover banner removed.");
     } catch (err) {
-      toast.error(errorMessage(err, "Could not upload your picture."));
-    } finally {
-      setUploadPct(null);
+      toast.error(errorMessage(err, "Couldn't remove the banner."));
     }
   };
 
-  const handleDirectHeaderCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !user) return;
-    if (!file.type.startsWith("image/") || file.size > 8 * 1024 * 1024) {
-      toast.error("Please choose an image under 8MB.");
-      return;
-    }
-    try {
-      setUploadPct(0);
-      await uploadCover(user.uid, file, profile.coverImageUrl, setUploadPct);
-      toast.success("Cover banner updated!");
-    } catch (err) {
-      toast.error(errorMessage(err, "Could not upload your banner."));
-    } finally {
-      setUploadPct(null);
-    }
-  };
 
   // Education History State
   const [eduList, setEduList] = useState<EducationEntry[]>(profile.educationHistory || []);
@@ -272,22 +299,34 @@ export function ProfilePage() {
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    const nameCheck = validatePersonName(editName, "full name");
+    if (!nameCheck.ok) {
+      toast.error(nameCheck.error ?? "Please enter a valid name.");
+      return;
+    }
     setSaving(true);
     try {
-      let avatarUrl = editAvatar;
-      let coverImageUrl = editCover;
-      if (pendingAvatar) {
+      let avatarUrl: string | null = editAvatar || null;
+      let coverImageUrl: string | null = editCover || null;
+      if (removeAvatarFlag) {
+        await removeAvatar(user.uid, profile.avatarUrl);
+        avatarUrl = null;
+      } else if (pendingAvatar) {
         avatarUrl = await uploadAvatar(user.uid, pendingAvatar, profile.avatarUrl, setUploadPct);
       }
-      if (pendingCover) {
+      if (removeCoverFlag) {
+        await removeCover(user.uid, profile.coverImageUrl);
+        coverImageUrl = null;
+      } else if (pendingCover) {
         coverImageUrl = await uploadCover(user.uid, pendingCover, profile.coverImageUrl, setUploadPct);
       }
       await updateProfile({
-        displayName: editName,
+        displayName: nameCheck.value,
         avatarUrl,
         coverImageUrl,
         gradeLevel: editGrade,
         institution: editInst,
+        institutionId: editInstId,
         semesterOrYear: editSem,
         degreeOrStream: editDeg,
         about: editAbout,
@@ -297,10 +336,12 @@ export function ProfilePage() {
       });
       setPendingAvatar(null);
       setPendingCover(null);
+      setRemoveAvatarFlag(false);
+      setRemoveCoverFlag(false);
       setIsEditModalOpen(false);
       toast.success("Profile updated successfully!");
     } catch (err) {
-      toast.error(errorMessage(err, "Could not save your profile."));
+      toast.error(errorMessage(err, "Couldn't save your profile. Please try again."));
     } finally {
       setSaving(false);
       setUploadPct(null);
@@ -348,10 +389,13 @@ export function ProfilePage() {
     toast.info("Education history removed.");
   };
 
-  const handleShareProfile = () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url);
-    toast.success("Profile link copied to clipboard!");
+  const withShare = async (fn: () => Promise<unknown> | void, ok?: string) => {
+    try {
+      await fn();
+      if (ok) toast.success(ok);
+    } catch (err) {
+      toast.error(errorMessage(err, "Couldn't share your profile. Please try again."));
+    }
   };
 
   /** Reviews are written ON a study buddy's profile (they appear in that buddy's "Public Reviews" tab). */
@@ -398,8 +442,8 @@ export function ProfilePage() {
 
           {/* Quick upload cover banner button */}
           <label className="absolute top-3 right-3 cursor-pointer z-10 bg-background/80 hover:bg-background text-foreground text-xs font-medium px-3 py-1.5 rounded-xl border border-border shadow-soft transition flex items-center gap-1.5 backdrop-blur-md">
-            <Camera className="h-3.5 w-3.5 text-primary" />
-            <span>Upload Cover Banner</span>
+            <Camera className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            <span>{profile.coverImageUrl ? "Replace banner" : "Upload cover banner"}</span>
             <input
               type="file"
               accept="image/*"
@@ -407,6 +451,18 @@ export function ProfilePage() {
               onChange={handleDirectHeaderCoverUpload}
             />
           </label>
+          {profile.coverImageUrl && (
+            <button
+              type="button"
+              onClick={handleRemoveCoverNow}
+              className="absolute top-3 right-[11.5rem] z-10 rounded-xl border border-border bg-background/80 px-3 py-1.5 text-xs font-medium shadow-soft backdrop-blur-md transition hover:bg-background"
+            >
+              Remove banner
+            </button>
+          )}
+          {uploadPct !== null && (
+            <div className="absolute bottom-3 right-3 z-10 rounded-lg bg-background/90 px-2.5 py-1 text-xs shadow-soft">Uploading… {uploadPct}%</div>
+          )}
         </div>
 
         <div className="p-6 relative pt-0">
@@ -439,6 +495,7 @@ export function ProfilePage() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="font-display text-3xl md:text-4xl font-medium tracking-tight">
                     {profile.displayName || "Your name"}
+                  {profile.universityVerified && <VerifiedBadge name={profile.verifiedUniversityName as string | null} className="ml-1.5" />}
                   </h1>
                   <Badge
                     variant="outline"
@@ -459,19 +516,38 @@ export function ProfilePage() {
                   <span>·</span>
                   <span>{profile.semesterOrYear || "Semester 4"}</span>
                   <span>·</span>
-                  <span>{profile.degreeOrStream || "BS Computer Science"}</span>
+                  <span>{profile.degreeOrStream || "Add your degree or stream"}</span>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button
-                onClick={handleShareProfile}
-                variant="outline"
-                className="rounded-xl border-border"
-              >
-                <Share2 className="mr-1.5 h-4 w-4" /> Share
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="rounded-xl border-border">
+                    <Share2 className="mr-1.5 h-4 w-4" /> Share
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52 rounded-xl">
+                  <DropdownMenuItem
+                    onClick={() => withShare(() => shareProfile.copyProfileLink(profile.username), "Profile link copied!")}
+                    className="text-sm"
+                  >
+                    Copy profile link
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => withShare(() => shareProfile.openProfileLink(profile.username))} className="text-sm">
+                    Open profile link
+                  </DropdownMenuItem>
+                  {shareProfile.canNativeShare() && (
+                    <DropdownMenuItem
+                      onClick={() => withShare(() => shareProfile.nativeShareProfile(profile.username, profile.displayName || "My profile"))}
+                      className="text-sm"
+                    >
+                      Share via…
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button
                 onClick={handleOpenEdit}
                 className="rounded-xl bg-gradient-primary text-primary-foreground shadow-elegant hover:opacity-90"
@@ -680,7 +756,7 @@ export function ProfilePage() {
               <div>
                 <span className="text-xs text-muted-foreground block">Degree / Stream</span>
                 <span className="font-semibold text-foreground mt-0.5 block">
-                  {profile.degreeOrStream || "BS Computer Science"}
+                  {profile.degreeOrStream || "Add your degree or stream"}
                 </span>
               </div>
 
@@ -948,8 +1024,10 @@ export function ProfilePage() {
 
           <form onSubmit={handleSaveProfile} className="space-y-4 py-2">
             <div>
-              <Label className="text-xs font-semibold">Full Name</Label>
+              <Label htmlFor="pf-name" className="text-xs font-semibold">Full Name<RequiredMark /></Label>
               <Input
+                id="pf-name"
+                autoComplete="name"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
                 className="rounded-xl mt-1"
@@ -962,7 +1040,7 @@ export function ProfilePage() {
               <Label className="text-xs font-semibold mb-1.5 block">Profile Picture (Avatar)</Label>
               <div className="flex items-center gap-3 mb-2">
                 <Avatar className="h-16 w-16 border-2 border-primary shrink-0 shadow-sm">
-                  <AvatarImage src={editAvatar} />
+                  <AvatarImage src={editAvatar || undefined} />
                   <AvatarFallback className="bg-primary/10 text-primary font-bold">
                     AV
                   </AvatarFallback>
@@ -980,6 +1058,19 @@ export function ProfilePage() {
                         onChange={handleAvatarFileUpload}
                       />
                     </label>
+                    {(editAvatar || profile.avatarUrl) && !removeAvatarFlag && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditAvatar("");
+                          setPendingAvatar(null);
+                          setRemoveAvatarFlag(true);
+                        }}
+                        className="h-8 rounded-xl border border-border px-3 text-xs font-medium hover:bg-secondary"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                   
                 </div>
@@ -1008,7 +1099,11 @@ export function ProfilePage() {
               <Label className="text-xs font-semibold mb-1.5 block">Cover Banner Image</Label>
               <div className="space-y-2 mb-2">
                 <div className="relative h-20 w-full rounded-2xl overflow-hidden border border-border bg-muted shadow-inner">
-                  <img src={editCover} alt="Cover preview" className="h-full w-full object-cover" />
+                  {editCover ? (
+                    <img src={editCover} alt="Cover preview" className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="h-full w-full bg-gradient-primary" aria-label="No banner" />
+                  )}
                   <label className="absolute bottom-2 right-2 cursor-pointer inline-flex items-center gap-1.5 bg-background/90 hover:bg-background text-foreground text-xs font-medium px-2.5 py-1 rounded-xl border border-border shadow-soft transition backdrop-blur-md">
                     <Upload className="h-3.5 w-3.5 text-primary" />
                     <span>Upload Banner from Device</span>
@@ -1020,6 +1115,19 @@ export function ProfilePage() {
                       onChange={handleCoverFileUpload}
                     />
                   </label>
+                  {(editCover || profile.coverImageUrl) && !removeCoverFlag && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditCover("");
+                        setPendingCover(null);
+                        setRemoveCoverFlag(true);
+                      }}
+                      className="absolute bottom-2 left-2 inline-flex items-center rounded-xl border border-border bg-background/90 px-2.5 py-1 text-xs font-medium shadow-soft backdrop-blur-md hover:bg-background"
+                    >
+                      Remove banner
+                    </button>
+                  )}
                 </div>
                 
               </div>
@@ -1045,7 +1153,7 @@ export function ProfilePage() {
             {/* Academic Level Dropdown */}
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs font-semibold">Grade / Class Level *</Label>
+                <Label className="text-xs font-semibold">Grade / Class Level<RequiredMark /></Label>
                 <Select value={editGrade} onValueChange={(v) => setEditGrade(v as GradeLevel)}>
                   <SelectTrigger className="rounded-xl mt-1">
                     <SelectValue />
@@ -1062,20 +1170,21 @@ export function ProfilePage() {
               </div>
 
               <div>
-                <Label className="text-xs font-semibold">Institution / University *</Label>
-                <Input aria-label="e.g. Stanford University or Lincoln High"
+                <Label htmlFor="pf-inst" className="text-xs font-semibold">Institution / University<RequiredMark /></Label>
+                <InstitutionSelect
+                  id="pf-inst"
                   value={editInst}
-                  onChange={(e) => setEditInst(e.target.value)}
-                  placeholder="e.g. Stanford University or Lincoln High"
-                  className="rounded-xl mt-1"
-                  required
+                  onChange={(v, inst) => {
+                    setEditInst(v);
+                    setEditInstId(inst?.id ?? null);
+                  }}
                 />
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs font-semibold">Semester / Year *</Label>
+                <Label className="text-xs font-semibold">Semester / Year</Label>
                 <Input aria-label="e.g. Semester 4 or Class 10"
                   value={editSem}
                   onChange={(e) => setEditSem(e.target.value)}
@@ -1085,7 +1194,7 @@ export function ProfilePage() {
               </div>
 
               <div>
-                <Label className="text-xs font-semibold">Degree OR Science/Arts Stream *</Label>
+                <Label className="text-xs font-semibold">Degree OR Science/Arts Stream</Label>
                 <Input aria-label="e.g. BS Computer Science OR Science Stream"
                   value={editDeg}
                   onChange={(e) => setEditDeg(e.target.value)}
@@ -1108,15 +1217,11 @@ export function ProfilePage() {
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs font-semibold">Country</Label>
-                <Input
-                  value={editCountry}
-                  onChange={(e) => setEditCountry(e.target.value)}
-                  className="rounded-xl mt-1"
-                />
+                <Label htmlFor="pf-country" className="text-xs font-semibold">Country<RequiredMark /></Label>
+                <CountrySelect id="pf-country" value={editCountry} onChange={setEditCountry} />
               </div>
               <div>
-                <Label className="text-xs font-semibold">Timezone</Label>
+                <Label className="text-xs font-semibold">Timezone<RequiredMark /></Label>
                 <Select value={editTimezone} onValueChange={setEditTimezone}>
                   <SelectTrigger className="rounded-xl mt-1">
                     <SelectValue placeholder="Select Timezone" />
@@ -1172,7 +1277,7 @@ export function ProfilePage() {
 
           <form onSubmit={handleAddEducation} className="space-y-3 py-1">
             <div>
-              <Label className="text-xs font-semibold">School / University Name *</Label>
+              <Label className="text-xs font-semibold">School / University Name<RequiredMark /></Label>
               <Input aria-label="e.g. Harvard University"
                 value={newEduInst}
                 onChange={(e) => setNewEduInst(e.target.value)}
@@ -1183,7 +1288,7 @@ export function ProfilePage() {
             </div>
 
             <div>
-              <Label className="text-xs font-semibold">Degree / Class *</Label>
+              <Label className="text-xs font-semibold">Degree / Class<RequiredMark /></Label>
               <Input aria-label="e.g. BS Computer Science or Matric Science"
                 value={newEduDeg}
                 onChange={(e) => setNewEduDeg(e.target.value)}
@@ -1308,6 +1413,17 @@ export function ProfilePage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ImageCropDialog
+        file={crop?.file ?? null}
+        aspect={crop?.kind === "avatar" ? 1 : 3.2}
+        outputWidth={crop?.kind === "avatar" ? 512 : 1600}
+        maxBytes={crop?.kind === "avatar" ? 150_000 : 450_000}
+        round={crop?.kind === "avatar"}
+        title={crop?.kind === "avatar" ? "Adjust your profile picture" : "Adjust your cover banner"}
+        onCancel={() => setCrop(null)}
+        onDone={handleCropped}
+      />
     </div>
   );
 }

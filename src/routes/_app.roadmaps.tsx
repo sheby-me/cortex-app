@@ -1,3 +1,5 @@
+import { RequiredMark } from "@/components/required-mark";
+import { UserError } from "@/lib/friendly-errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -131,7 +133,7 @@ export function RoadmapPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to generate AI roadmap.");
+        throw new UserError(data.error || "Failed to generate AI roadmap.");
       }
 
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -158,7 +160,7 @@ export function RoadmapPage() {
       toast.success(`Generated ${weeksInput}-week roadmap for "${goal}"!`);
     } catch (err: unknown) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Error generating AI roadmap.");
+      toast.error(errorMessage(err, "Error generating AI roadmap."));
     } finally {
       setLoading(false);
     }
@@ -196,7 +198,7 @@ export function RoadmapPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  Learning Goal / Skill / Exam *
+                  Learning Goal / Skill / Exam<RequiredMark />
                 </label>
                 <Input aria-label="e.g. Master Machine Learning from scratch, Learn Quantum Computing, IELTS Band 8"
                   value={goal}

@@ -38,6 +38,8 @@ import {
 } from "@/services/groups";
 import { groupConversationId } from "@/services/messaging";
 import { errorMessage, timeAgo } from "@/services/common";
+import { UserAutocomplete, type PickedUser } from "@/components/user-autocomplete";
+import { RequiredMark } from "@/components/required-mark";
 import type { UserDoc } from "@/services/users";
 
 export const Route = createFileRoute("/_app/groups")({
@@ -107,13 +109,13 @@ export function GroupsPage() {
   const [newDesc, setNewDesc] = useState("");
   const [newSchedule, setNewSchedule] = useState("Weekly on Mondays at 6:00 PM");
   const [newPrivacy, setNewPrivacy] = useState<"public" | "private">("public");
-  const [invitedUsernames, setInvitedUsernames] = useState("");
+  const [invitedUsers, setInvitedUsers] = useState<PickedUser[]>([]);
   const [creating, setCreating] = useState(false);
 
   // Preview Modal
   const [previewGroup, setPreviewGroup] = useState<GroupItem | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
-  const [inviteMore, setInviteMore] = useState("");
+  const [inviteMore, setInviteMore] = useState<PickedUser[]>([]);
   useEffect(() => {
     if (!previewGroup) {
       setMembers([]);
@@ -132,10 +134,7 @@ export function GroupsPage() {
       return;
     }
 
-    const handles = invitedUsernames
-      .split(/[\s,]+/)
-      .map((h) => h.trim().replace(/^@/, ""))
-      .filter(Boolean);
+    const handles = invitedUsers.map((u) => u.username);
 
     setCreating(true);
     try {
@@ -159,7 +158,7 @@ export function GroupsPage() {
       }
       setNewName("");
       setNewDesc("");
-      setInvitedUsernames("");
+      setInvitedUsers([]);
     } catch (err) {
       toast.error(errorMessage(err, "Couldn't create the group."));
     } finally {
@@ -196,13 +195,13 @@ export function GroupsPage() {
   };
 
   const handleInviteMore = async (g: GroupItem) => {
-    const handles = inviteMore.split(/[\s,]+/).map((h) => h.trim()).filter(Boolean);
+    const handles = inviteMore.map((u) => u.username);
     if (handles.length === 0) return;
     try {
       const res = await inviteToGroup(g, meDoc, handles);
       if (res.invited.length) toast.success(`Invited ${res.invited.map((h) => `@${h}`).join(", ")}`);
       if (res.notFound.length) toast.warning(`No user found for: ${res.notFound.map((h) => `@${h}`).join(", ")}`);
-      setInviteMore("");
+      setInviteMore([]);
     } catch (err) {
       toast.error(errorMessage(err));
     }
@@ -352,7 +351,7 @@ export function GroupsPage() {
           <form onSubmit={handleCreateGroup} className="space-y-4 py-2">
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">
-                Group Name *
+                Group Name<RequiredMark />
               </label>
               <Input aria-label="e.g. Advanced Operating Systems Sprint"
                 value={newName}
@@ -395,16 +394,16 @@ export function GroupsPage() {
 
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">
-                Invite Members & Study Buddies (@usernames)
+                Invite members & study buddies
               </label>
-              <Input aria-label="e.g. @rahul_verma, @elena_rostova, @ken_watanabe"
-                value={invitedUsernames}
-                onChange={(e) => setInvitedUsernames(e.target.value)}
-                placeholder="e.g. @rahul_verma, @elena_rostova, @ken_watanabe"
-                className="rounded-xl font-mono text-xs"
+              <UserAutocomplete
+                value={invitedUsers}
+                onChange={setInvitedUsers}
+                aria-label="Invite members by name or username"
+                placeholder="Start typing a name or @username…"
               />
               <span className="text-xs text-muted-foreground block mt-0.5">
-                Separate unique IDs or usernames with commas
+                Pick people from the suggestions — they get an invitation notification.
               </span>
             </div>
 
@@ -515,13 +514,16 @@ export function GroupsPage() {
               </div>
 
               {livePreview.ownerId === me && (
-                <div className="flex items-center gap-2">
-                  <Input aria-label="Invite by @username (comma separated)"
-                    value={inviteMore}
-                    onChange={(e) => setInviteMore(e.target.value)}
-                    placeholder="Invite by @username (comma separated)"
-                    className="h-9 rounded-xl text-xs"
-                  />
+                <div className="flex items-start gap-2">
+                  <div className="flex-1">
+                    <UserAutocomplete
+                      value={inviteMore}
+                      onChange={setInviteMore}
+                      excludeUids={members.map((m) => m.uid)}
+                      aria-label="Invite people to this group"
+                      placeholder="Invite by name or @username…"
+                    />
+                  </div>
                   <Button size="sm" onClick={() => handleInviteMore(livePreview)} className="rounded-xl">
                     Invite
                   </Button>

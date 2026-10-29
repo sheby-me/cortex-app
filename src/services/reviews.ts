@@ -3,6 +3,7 @@
  * One review per reviewer per profile (the reviewer's uid is the document id, so re-reviewing edits the old one).
  * Only study buddies of the profile owner may review (enforced in firestore.rules).
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   doc,
@@ -58,9 +59,9 @@ export async function leaveReview(
   text: string,
 ): Promise<void> {
   const r = Math.round(rating);
-  if (r < 1 || r > 5) throw new Error("Please choose a rating between 1 and 5.");
+  if (r < 1 || r > 5) throw new UserError("Please choose a rating between 1 and 5.");
   const body = text.trim();
-  if (!body) throw new Error("Please write a short review.");
+  if (!body) throw new UserError("Please write a short review.");
   await setDoc(
     doc(db, "users", targetUid, "reviews", reviewer.uid),
     stripUndefined({

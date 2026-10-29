@@ -57,6 +57,7 @@ import {
   type PostType,
 } from "@/services/community";
 import { isSafeStorageUrl } from "@/lib/safe-url";
+import { VerifiedBadge } from "@/components/verified-badge";
 import { errorMessage, timeAgo } from "@/services/common";
 import type { UserDoc } from "@/services/users";
 
@@ -481,6 +482,7 @@ export function CommunityPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2 text-sm">
                       <span className="font-semibold">{p.author.displayName}</span>
+                      {p.author.verified && <VerifiedBadge />}
                       {p.author.username && (
                         <span className="font-mono text-xs text-primary bg-primary/10 px-1.5 py-0.2 rounded font-medium">
                           @{p.author.username}

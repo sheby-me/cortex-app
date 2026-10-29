@@ -6,6 +6,9 @@
  *   users_private/{uid}    email + account-level data (owner + admin only)
  *   usernames/{lower}      { uid } — one doc per taken handle; created in the same transaction as the profile
  */
+import { UserError } from "@/lib/friendly-errors";
+import { validatePersonName } from "@/lib/name-policy";
+import { checkUsernameFormat, cleanUsername } from "@/lib/username-policy";
 import {
   collection,
   deleteDoc,
@@ -49,6 +52,7 @@ export const EDITABLE_PROFILE_FIELDS = [
   "teach",
   "learn",
   "educationHistory",
+  "institutionId",
   "darkMode",
   "emailNotifications",
   "showLeaderboard",
@@ -70,6 +74,11 @@ export interface UserDoc {
   tutorStatus?: "pending" | "approved" | "rejected" | null;
   gradeLevel?: GradeLevel | null;
   institution?: string | null;
+  institutionId?: string | null;
+  universityVerified?: boolean;
+  verifiedUniversityId?: string | null;
+  verifiedUniversityName?: string | null;
+  verifiedAt?: unknown;
   semesterOrYear?: string | null;
   degreeOrStream?: string | null;
   about?: string | null;
@@ -100,17 +109,11 @@ export interface UserDoc {
 /** Starting balance for a new account. Mirrors what the README promises ("every student begins with credits"). */
 export const STARTING_CREDITS = 100;
 
-export function cleanUsername(raw: string): string {
-  if (!raw) return "";
-  return raw.trim().toLowerCase().replace(/^@+/, "").replace(/[^a-z0-9_]/g, "");
-}
+export { cleanUsername } from "@/lib/username-policy";
 
 export function validateUsername(raw: string): { valid: boolean; reason?: string } {
-  const clean = cleanUsername(raw);
-  if (!clean) return { valid: false, reason: "Username cannot be empty." };
-  if (clean.length < 3) return { valid: false, reason: "Username must be at least 3 characters." };
-  if (clean.length > 20) return { valid: false, reason: "Username cannot exceed 20 characters." };
-  return { valid: true };
+  const r = checkUsernameFormat(raw);
+  return { valid: r.ok, reason: r.error };
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -226,7 +229,7 @@ export async function isUsernameAvailable(username: string, excludeUid?: string)
 export async function claimUsername(uid: string, username: string): Promise<string> {
   const clean = cleanUsername(username);
   const check = validateUsername(clean);
-  if (!check.valid) throw new Error(check.reason);
+  if (!check.valid) throw new UserError(check.reason ?? "That username isn't allowed.");
 
   await runTransaction(db, async (tx) => {
     const newRef = doc(db, "usernames", clean);
@@ -234,7 +237,7 @@ export async function claimUsername(uid: string, username: string): Promise<stri
     const [newSnap, userSnap] = await Promise.all([tx.get(newRef), tx.get(userRef)]);
 
     if (newSnap.exists() && (newSnap.data() as { uid: string }).uid !== uid) {
-      throw new Error("USERNAME_TAKEN");
+      throw new UserError("USERNAME_TAKEN");
     }
 
     const prev = userSnap.exists() ? (userSnap.data() as UserDoc).usernameLower : null;
@@ -342,6 +345,9 @@ export async function updateUserProfile(
   }
 
   if ("displayName" in payload) {
+    const nameCheck = validatePersonName(String(payload.displayName ?? ""), "name");
+    if (!nameCheck.ok) throw new UserError(nameCheck.error ?? "Please enter a valid name.");
+    payload.displayName = nameCheck.value;
     payload.displayNameLower = String(payload.displayName ?? "").toLowerCase();
   }
 
@@ -517,4 +523,16 @@ export async function deleteMyAccountData(uid: string, username?: string | null)
 
   // 4) identity documents last
   await deleteUserData(uid, username);
+}
+
+/** Remove the cover banner (profile + Storage file). */
+export async function removeCover(uid: string, currentUrl?: string | null): Promise<void> {
+  await updateDoc(doc(db, "users", uid), { coverImageUrl: null, updatedAt: serverTimestamp() });
+  void deleteStoredFile(currentUrl);
+}
+
+/** Remove the profile picture (falls back to initials). */
+export async function removeAvatar(uid: string, currentUrl?: string | null): Promise<void> {
+  await updateDoc(doc(db, "users", uid), { avatarUrl: null, updatedAt: serverTimestamp() });
+  void deleteStoredFile(currentUrl);
 }

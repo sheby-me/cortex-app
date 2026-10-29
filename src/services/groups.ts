@@ -10,6 +10,7 @@
  *
  * memberCount is changed only in the same batch that adds / removes a member document.
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   arrayRemove,
   arrayUnion,
@@ -202,8 +203,8 @@ export async function createGroup(params: {
 }): Promise<{ id: string; invited: string[]; notFound: string[] }> {
   const { owner } = params;
   const name = params.name.trim();
-  if (!name) throw new Error("Please enter a group name.");
-  if (name.length > 80) throw new Error("Group name is too long (max 80 characters).");
+  if (!name) throw new UserError("Please enter a group name.");
+  if (name.length > 80) throw new UserError("Group name is too long (max 80 characters).");
 
   // Resolve @handles → uids (usernames/{handle} is a public lookup doc).
   const handles = Array.from(new Set((params.invitedHandles ?? []).map(cleanUsername).filter(Boolean)));
@@ -274,7 +275,7 @@ export async function createGroup(params: {
 /** Join a public group, or any group I hold an invitation to. */
 export async function joinGroup(group: Pick<Group, "id" | "privacy" | "name">, me: Partial<UserDoc> & { uid: string }): Promise<void> {
   const invite = await getDoc(doc(db, "group_invites", inviteId(group.id, me.uid)));
-  if (group.privacy === "private" && !invite.exists()) throw new Error("This is a private group — you need an invitation to join.");
+  if (group.privacy === "private" && !invite.exists()) throw new UserError("This is a private group — you need an invitation to join.");
 
   const batch = writeBatch(db);
   batch.set(doc(db, "groups", group.id, "members", me.uid), memberLite(me, "member"));
@@ -290,7 +291,7 @@ export async function joinGroup(group: Pick<Group, "id" | "privacy" | "name">, m
 }
 
 export async function leaveGroup(group: Pick<Group, "id" | "ownerId">, uid: string): Promise<void> {
-  if (group.ownerId === uid) throw new Error("Group owners can't leave. Delete the group instead.");
+  if (group.ownerId === uid) throw new UserError("Group owners can't leave. Delete the group instead.");
   const batch = writeBatch(db);
   batch.delete(doc(db, "groups", group.id, "members", uid));
   batch.update(doc(db, "groups", group.id), { memberCount: increment(-1) });

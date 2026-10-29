@@ -1,3 +1,4 @@
+import { UserError } from "@/lib/friendly-errors";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MailCheck, Loader2, RefreshCw, LogOut } from "lucide-react";
@@ -98,7 +99,7 @@ function VerifyEmailPage() {
     try {
       await confirmOtp(code);
       const ok = await refreshUser();
-      if (!ok) throw new Error("The code was accepted but your account isn't verified yet. Please try again.");
+      if (!ok) throw new UserError("The code was accepted but your account isn't verified yet. Please try again.");
       toast.success("Email verified — welcome to Cortex!");
     } catch (err) {
       setError(formatAuthError(err));

@@ -1,3 +1,4 @@
+import { RequiredMark } from "@/components/required-mark";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -554,7 +555,7 @@ export function TutorsPage() {
 
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  Topic / Problem Notes *
+                  Topic / Problem Notes<RequiredMark />
                 </label>
                 <Textarea
                   value={sessionTopic}

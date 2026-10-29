@@ -1,0 +1,1989 @@
+[
+ {
+  "id": "abasyn-university",
+  "name": "Abasyn University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "abasyn.edu.pk"
+  ]
+ },
+ {
+  "id": "abdul-wali-khan-university-mardan",
+  "name": "Abdul Wali Khan University Mardan",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "awkum.edu.pk"
+  ]
+ },
+ {
+  "id": "aga-khan-university",
+  "name": "Aga Khan University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "aku.edu"
+  ]
+ },
+ {
+  "id": "air-university",
+  "name": "Air University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "au.edu.pk"
+  ]
+ },
+ {
+  "id": "aitchison-college",
+  "name": "Aitchison College",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "allama-iqbal-open-university",
+  "name": "Allama Iqbal Open University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "aiou.edu.pk"
+  ]
+ },
+ {
+  "id": "american-university-in-cairo",
+  "name": "American University in Cairo",
+  "country": "Egypt",
+  "type": "university",
+  "domains": [
+   "aucegypt.edu"
+  ]
+ },
+ {
+  "id": "american-university-of-beirut",
+  "name": "American University of Beirut",
+  "country": "Lebanon",
+  "type": "university",
+  "domains": [
+   "aub.edu.lb"
+  ]
+ },
+ {
+  "id": "american-university-of-sharjah",
+  "name": "American University of Sharjah",
+  "country": "United Arab Emirates",
+  "type": "university",
+  "domains": [
+   "aus.edu"
+  ]
+ },
+ {
+  "id": "arizona-state-university",
+  "name": "Arizona State University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "asu.edu"
+  ]
+ },
+ {
+  "id": "army-public-school",
+  "name": "Army Public School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "australian-national-university",
+  "name": "Australian National University",
+  "country": "Australia",
+  "type": "university",
+  "domains": [
+   "anu.edu.au"
+  ]
+ },
+ {
+  "id": "bahauddin-zakariya-university",
+  "name": "Bahauddin Zakariya University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "bzu.edu.pk"
+  ]
+ },
+ {
+  "id": "bahria-university",
+  "name": "Bahria University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "bahria.edu.pk"
+  ]
+ },
+ {
+  "id": "balochistan-university-of-information-technology-engineering",
+  "name": "Balochistan University of Information Technology, Engineering and Management Sciences (BUITEMS)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "buitms.edu.pk"
+  ]
+ },
+ {
+  "id": "bangladesh-university-of-engineering-and-technology-buet",
+  "name": "Bangladesh University of Engineering and Technology (BUET)",
+  "country": "Bangladesh",
+  "type": "university",
+  "domains": [
+   "buet.ac.bd"
+  ]
+ },
+ {
+  "id": "beaconhouse-national-university",
+  "name": "Beaconhouse National University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "bnu.edu.pk"
+  ]
+ },
+ {
+  "id": "beaconhouse-school-system",
+  "name": "Beaconhouse School System",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "bits-pilani",
+  "name": "BITS Pilani",
+  "country": "India",
+  "type": "university",
+  "domains": [
+   "bits-pilani.ac.in"
+  ]
+ },
+ {
+  "id": "boston-university",
+  "name": "Boston University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "bu.edu"
+  ]
+ },
+ {
+  "id": "bo-azi-i-university",
+  "name": "Boğaziçi University",
+  "country": "Türkiye",
+  "type": "university",
+  "domains": [
+   "boun.edu.tr"
+  ]
+ },
+ {
+  "id": "brown-university",
+  "name": "Brown University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "brown.edu"
+  ]
+ },
+ {
+  "id": "cadet-college-hasan-abdal",
+  "name": "Cadet College Hasan Abdal",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "cairo-university",
+  "name": "Cairo University",
+  "country": "Egypt",
+  "type": "university",
+  "domains": [
+   "cu.edu.eg"
+  ]
+ },
+ {
+  "id": "california-institute-of-technology-caltech",
+  "name": "California Institute of Technology (Caltech)",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "caltech.edu"
+  ]
+ },
+ {
+  "id": "capital-university-of-science-and-technology-cust",
+  "name": "Capital University of Science and Technology (CUST)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "cust.edu.pk"
+  ]
+ },
+ {
+  "id": "carnegie-mellon-university",
+  "name": "Carnegie Mellon University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "cmu.edu"
+  ]
+ },
+ {
+  "id": "centre-for-advanced-studies-in-engineering-case",
+  "name": "Centre for Advanced Studies in Engineering (CASE)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "case.edu.pk"
+  ]
+ },
+ {
+  "id": "chinese-university-of-hong-kong",
+  "name": "Chinese University of Hong Kong",
+  "country": "China",
+  "type": "university",
+  "domains": [
+   "cuhk.edu.hk"
+  ]
+ },
+ {
+  "id": "chulalongkorn-university",
+  "name": "Chulalongkorn University",
+  "country": "Thailand",
+  "type": "university",
+  "domains": [
+   "chula.ac.th"
+  ]
+ },
+ {
+  "id": "city-university-of-science-and-information-technology",
+  "name": "City University of Science and Information Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "cityuniversity.edu.pk"
+  ]
+ },
+ {
+  "id": "columbia-university",
+  "name": "Columbia University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "columbia.edu"
+  ]
+ },
+ {
+  "id": "comsats-university-islamabad",
+  "name": "COMSATS University Islamabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "comsats.edu.pk"
+  ]
+ },
+ {
+  "id": "convent-of-jesus-and-mary",
+  "name": "Convent of Jesus and Mary",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "cornell-university",
+  "name": "Cornell University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "cornell.edu"
+  ]
+ },
+ {
+  "id": "crescent-model-higher-secondary-school",
+  "name": "Crescent Model Higher Secondary School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "dawood-university-of-engineering-and-technology",
+  "name": "Dawood University of Engineering and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "duet.edu.pk"
+  ]
+ },
+ {
+  "id": "delft-university-of-technology",
+  "name": "Delft University of Technology",
+  "country": "Netherlands",
+  "type": "university",
+  "domains": [
+   "tudelft.nl"
+  ]
+ },
+ {
+  "id": "dha-suffa-university",
+  "name": "DHA Suffa University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "dsu.edu.pk"
+  ]
+ },
+ {
+  "id": "divisional-public-school",
+  "name": "Divisional Public School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "dow-university-of-health-sciences",
+  "name": "Dow University of Health Sciences",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "duhs.edu.pk"
+  ]
+ },
+ {
+  "id": "duke-university",
+  "name": "Duke University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "duke.edu"
+  ]
+ },
+ {
+  "id": "durham-university",
+  "name": "Durham University",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "durham.ac.uk"
+  ]
+ },
+ {
+  "id": "epfl",
+  "name": "EPFL",
+  "country": "Switzerland",
+  "type": "university",
+  "domains": [
+   "epfl.ch"
+  ]
+ },
+ {
+  "id": "eth-zurich",
+  "name": "ETH Zurich",
+  "country": "Switzerland",
+  "type": "university",
+  "domains": [
+   "ethz.ch"
+  ]
+ },
+ {
+  "id": "fast-national-university-of-computer-and-emerging-sciences-f",
+  "name": "FAST National University of Computer and Emerging Sciences (FAST-NUCES)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "nu.edu.pk"
+  ]
+ },
+ {
+  "id": "fatima-jinnah-women-university",
+  "name": "Fatima Jinnah Women University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "fjwu.edu.pk"
+  ]
+ },
+ {
+  "id": "forman-christian-college-fccu",
+  "name": "Forman Christian College (FCCU)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "fccollege.edu.pk"
+  ]
+ },
+ {
+  "id": "foundation-public-school",
+  "name": "Foundation Public School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "foundation-university-islamabad",
+  "name": "Foundation University Islamabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "fui.edu.pk"
+  ]
+ },
+ {
+  "id": "georgia-institute-of-technology",
+  "name": "Georgia Institute of Technology",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "gatech.edu"
+  ]
+ },
+ {
+  "id": "ghulam-ishaq-khan-institute-giki",
+  "name": "Ghulam Ishaq Khan Institute (GIKI)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "giki.edu.pk"
+  ]
+ },
+ {
+  "id": "gomal-university",
+  "name": "Gomal University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "gu.edu.pk"
+  ]
+ },
+ {
+  "id": "government-college-intermediate",
+  "name": "Government College (Intermediate)",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "government-college-university-faisalabad",
+  "name": "Government College University, Faisalabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "gcuf.edu.pk"
+  ]
+ },
+ {
+  "id": "government-college-university-lahore-gcu",
+  "name": "Government College University, Lahore (GCU)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "gcu.edu.pk"
+  ]
+ },
+ {
+  "id": "greenwich-university",
+  "name": "Greenwich University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "greenwich.edu.pk"
+  ]
+ },
+ {
+  "id": "habib-university",
+  "name": "Habib University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "habib.edu.pk"
+  ]
+ },
+ {
+  "id": "hamdard-university",
+  "name": "Hamdard University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "hamdard.edu.pk"
+  ]
+ },
+ {
+  "id": "harvard-university",
+  "name": "Harvard University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "harvard.edu"
+  ]
+ },
+ {
+  "id": "hazara-university",
+  "name": "Hazara University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "hu.edu.pk"
+  ]
+ },
+ {
+  "id": "heidelberg-university",
+  "name": "Heidelberg University",
+  "country": "Germany",
+  "type": "university",
+  "domains": [
+   "uni-heidelberg.de"
+  ]
+ },
+ {
+  "id": "hong-kong-university-of-science-and-technology",
+  "name": "Hong Kong University of Science and Technology",
+  "country": "China",
+  "type": "university",
+  "domains": [
+   "ust.hk"
+  ]
+ },
+ {
+  "id": "imperial-college-london",
+  "name": "Imperial College London",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "ic.ac.uk"
+  ]
+ },
+ {
+  "id": "indian-institute-of-science",
+  "name": "Indian Institute of Science",
+  "country": "India",
+  "type": "university",
+  "domains": [
+   "iisc.ac.in"
+  ]
+ },
+ {
+  "id": "indian-institute-of-technology-bombay",
+  "name": "Indian Institute of Technology Bombay",
+  "country": "India",
+  "type": "university",
+  "domains": [
+   "iitb.ac.in"
+  ]
+ },
+ {
+  "id": "indian-institute-of-technology-delhi",
+  "name": "Indian Institute of Technology Delhi",
+  "country": "India",
+  "type": "university",
+  "domains": [
+   "iitd.ac.in"
+  ]
+ },
+ {
+  "id": "indian-institute-of-technology-madras",
+  "name": "Indian Institute of Technology Madras",
+  "country": "India",
+  "type": "university",
+  "domains": [
+   "iitm.ac.in"
+  ]
+ },
+ {
+  "id": "information-technology-university-itu",
+  "name": "Information Technology University (ITU)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "itu.edu.pk"
+  ]
+ },
+ {
+  "id": "institute-of-business-administration-iba-karachi",
+  "name": "Institute of Business Administration (IBA), Karachi",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "iba.edu.pk"
+  ]
+ },
+ {
+  "id": "institute-of-management-sciences-imsciences-peshawar",
+  "name": "Institute of Management Sciences (IMSciences), Peshawar",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "imsciences.edu.pk"
+  ]
+ },
+ {
+  "id": "institute-of-southern-punjab",
+  "name": "Institute of Southern Punjab",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "isp.edu.pk"
+  ]
+ },
+ {
+  "id": "institute-of-space-technology",
+  "name": "Institute of Space Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ist.edu.pk"
+  ]
+ },
+ {
+  "id": "international-islamic-university-islamabad",
+  "name": "International Islamic University, Islamabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "iiu.edu.pk"
+  ]
+ },
+ {
+  "id": "iqra-university",
+  "name": "Iqra University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "iqra.edu.pk"
+  ]
+ },
+ {
+  "id": "islamabad-model-college",
+  "name": "Islamabad Model College",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "islamia-university-of-bahawalpur",
+  "name": "Islamia University of Bahawalpur",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "iub.edu.pk"
+  ]
+ },
+ {
+  "id": "istanbul-technical-university",
+  "name": "Istanbul Technical University",
+  "country": "Türkiye",
+  "type": "university",
+  "domains": [
+   "itu.edu.tr"
+  ]
+ },
+ {
+  "id": "johns-hopkins-university",
+  "name": "Johns Hopkins University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "jhu.edu"
+  ]
+ },
+ {
+  "id": "kaist",
+  "name": "KAIST",
+  "country": "South Korea",
+  "type": "university",
+  "domains": [
+   "kaist.ac.kr"
+  ]
+ },
+ {
+  "id": "karachi-grammar-school",
+  "name": "Karachi Grammar School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "karakoram-international-university",
+  "name": "Karakoram International University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "kiu.edu.pk"
+  ]
+ },
+ {
+  "id": "kaust",
+  "name": "KAUST",
+  "country": "Saudi Arabia",
+  "type": "university",
+  "domains": [
+   "kaust.edu.sa"
+  ]
+ },
+ {
+  "id": "khalifa-university",
+  "name": "Khalifa University",
+  "country": "United Arab Emirates",
+  "type": "university",
+  "domains": [
+   "ku.ac.ae"
+  ]
+ },
+ {
+  "id": "khyber-medical-university",
+  "name": "Khyber Medical University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "kmu.edu.pk"
+  ]
+ },
+ {
+  "id": "king-edward-medical-university",
+  "name": "King Edward Medical University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "kemu.edu.pk"
+  ]
+ },
+ {
+  "id": "king-fahd-university-of-petroleum-and-minerals",
+  "name": "King Fahd University of Petroleum and Minerals",
+  "country": "Saudi Arabia",
+  "type": "university",
+  "domains": [
+   "kfupm.edu.sa"
+  ]
+ },
+ {
+  "id": "king-saud-university",
+  "name": "King Saud University",
+  "country": "Saudi Arabia",
+  "type": "university",
+  "domains": [
+   "ksu.edu.sa"
+  ]
+ },
+ {
+  "id": "king-s-college-london",
+  "name": "King's College London",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "kcl.ac.uk"
+  ]
+ },
+ {
+  "id": "kinnaird-college-for-women-university",
+  "name": "Kinnaird College for Women University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "kinnaird.edu.pk"
+  ]
+ },
+ {
+  "id": "kohat-university-of-science-and-technology",
+  "name": "Kohat University of Science and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "kust.edu.pk"
+  ]
+ },
+ {
+  "id": "kth-royal-institute-of-technology",
+  "name": "KTH Royal Institute of Technology",
+  "country": "Sweden",
+  "type": "university",
+  "domains": [
+   "kth.se"
+  ]
+ },
+ {
+  "id": "ku-leuven",
+  "name": "KU Leuven",
+  "country": "Belgium",
+  "type": "university",
+  "domains": [
+   "kuleuven.be"
+  ]
+ },
+ {
+  "id": "lahore-american-school",
+  "name": "Lahore American School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "lahore-college-for-women-university",
+  "name": "Lahore College for Women University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "lcwu.edu.pk"
+  ]
+ },
+ {
+  "id": "lahore-garrison-university",
+  "name": "Lahore Garrison University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "lgu.edu.pk"
+  ]
+ },
+ {
+  "id": "lahore-grammar-school",
+  "name": "Lahore Grammar School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "lahore-school-of-economics",
+  "name": "Lahore School of Economics",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "lahoreschoolofeconomics.edu.pk"
+  ]
+ },
+ {
+  "id": "lahore-university-of-management-sciences-lums",
+  "name": "Lahore University of Management Sciences (LUMS)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "lums.edu.pk"
+  ]
+ },
+ {
+  "id": "lancaster-university",
+  "name": "Lancaster University",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "lancaster.ac.uk"
+  ]
+ },
+ {
+  "id": "london-school-of-economics-lse",
+  "name": "London School of Economics (LSE)",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "lse.ac.uk"
+  ]
+ },
+ {
+  "id": "ludwig-maximilian-university-of-munich",
+  "name": "Ludwig Maximilian University of Munich",
+  "country": "Germany",
+  "type": "university",
+  "domains": [
+   "lmu.de"
+  ]
+ },
+ {
+  "id": "massachusetts-institute-of-technology-mit",
+  "name": "Massachusetts Institute of Technology (MIT)",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "mit.edu"
+  ]
+ },
+ {
+  "id": "mcgill-university",
+  "name": "McGill University",
+  "country": "Canada",
+  "type": "university",
+  "domains": [
+   "mcgill.ca"
+  ]
+ },
+ {
+  "id": "mehran-university-of-engineering-and-technology",
+  "name": "Mehran University of Engineering and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "muet.edu.pk"
+  ]
+ },
+ {
+  "id": "middle-east-technical-university",
+  "name": "Middle East Technical University",
+  "country": "Türkiye",
+  "type": "university",
+  "domains": [
+   "metu.edu.tr"
+  ]
+ },
+ {
+  "id": "minhaj-university-lahore",
+  "name": "Minhaj University Lahore",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "mul.edu.pk"
+  ]
+ },
+ {
+  "id": "mirpur-university-of-science-and-technology",
+  "name": "Mirpur University of Science and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "must.edu.pk"
+  ]
+ },
+ {
+  "id": "monash-university",
+  "name": "Monash University",
+  "country": "Australia",
+  "type": "university",
+  "domains": [
+   "monash.edu"
+  ]
+ },
+ {
+  "id": "muhammad-ali-jinnah-university",
+  "name": "Muhammad Ali Jinnah University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "jinnah.edu"
+  ]
+ },
+ {
+  "id": "muhammad-nawaz-sharif-university-of-engineering-and-technolo",
+  "name": "Muhammad Nawaz Sharif University of Engineering and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "mnsuet.edu.pk"
+  ]
+ },
+ {
+  "id": "nanyang-technological-university-ntu",
+  "name": "Nanyang Technological University (NTU)",
+  "country": "Singapore",
+  "type": "university",
+  "domains": [
+   "ntu.edu.sg"
+  ]
+ },
+ {
+  "id": "national-autonomous-university-of-mexico-unam",
+  "name": "National Autonomous University of Mexico (UNAM)",
+  "country": "Mexico",
+  "type": "university",
+  "domains": [
+   "unam.mx"
+  ]
+ },
+ {
+  "id": "national-college-of-arts",
+  "name": "National College of Arts",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "nca.edu.pk"
+  ]
+ },
+ {
+  "id": "national-textile-university",
+  "name": "National Textile University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ntu.edu.pk"
+  ]
+ },
+ {
+  "id": "national-university-of-sciences-and-technology-nust",
+  "name": "National University of Sciences and Technology (NUST)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "nust.edu.pk"
+  ]
+ },
+ {
+  "id": "national-university-of-singapore-nus",
+  "name": "National University of Singapore (NUS)",
+  "country": "Singapore",
+  "type": "university",
+  "domains": [
+   "nus.edu.sg"
+  ]
+ },
+ {
+  "id": "ned-university-of-engineering-and-technology",
+  "name": "NED University of Engineering and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "neduet.edu.pk"
+  ]
+ },
+ {
+  "id": "new-york-university",
+  "name": "New York University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "nyu.edu"
+  ]
+ },
+ {
+  "id": "northwestern-university",
+  "name": "Northwestern University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "northwestern.edu"
+  ]
+ },
+ {
+  "id": "ohio-state-university",
+  "name": "Ohio State University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "osu.edu"
+  ]
+ },
+ {
+  "id": "other-school-or-college",
+  "name": "Other school or college",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "pakistan-institute-of-engineering-and-applied-sciences-pieas",
+  "name": "Pakistan Institute of Engineering and Applied Sciences (PIEAS)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "pieas.edu.pk"
+  ]
+ },
+ {
+  "id": "peking-university",
+  "name": "Peking University",
+  "country": "China",
+  "type": "university",
+  "domains": [
+   "pku.edu.cn"
+  ]
+ },
+ {
+  "id": "pennsylvania-state-university",
+  "name": "Pennsylvania State University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "psu.edu"
+  ]
+ },
+ {
+  "id": "pir-mehr-ali-shah-arid-agriculture-university",
+  "name": "Pir Mehr Ali Shah Arid Agriculture University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uaar.edu.pk"
+  ]
+ },
+ {
+  "id": "preston-university",
+  "name": "Preston University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "preston.edu.pk"
+  ]
+ },
+ {
+  "id": "princeton-university",
+  "name": "Princeton University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "princeton.edu"
+  ]
+ },
+ {
+  "id": "punjab-group-of-colleges",
+  "name": "Punjab Group of Colleges",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "purdue-university",
+  "name": "Purdue University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "purdue.edu"
+  ]
+ },
+ {
+  "id": "qatar-university",
+  "name": "Qatar University",
+  "country": "Qatar",
+  "type": "university",
+  "domains": [
+   "qu.edu.qa"
+  ]
+ },
+ {
+  "id": "quaid-e-awam-university-of-engineering-science-and-technolog",
+  "name": "Quaid-e-Awam University of Engineering, Science and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "quest.edu.pk"
+  ]
+ },
+ {
+  "id": "quaid-i-azam-university",
+  "name": "Quaid-i-Azam University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "qau.edu.pk"
+  ]
+ },
+ {
+  "id": "queen-mary-university-of-london",
+  "name": "Queen Mary University of London",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "qmul.ac.uk"
+  ]
+ },
+ {
+  "id": "riphah-international-university",
+  "name": "Riphah International University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "riphah.edu.pk"
+  ]
+ },
+ {
+  "id": "roots-international-schools",
+  "name": "Roots International Schools",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "saint-anthony-s-high-school",
+  "name": "Saint Anthony's High School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "seoul-national-university",
+  "name": "Seoul National University",
+  "country": "South Korea",
+  "type": "university",
+  "domains": [
+   "snu.ac.kr"
+  ]
+ },
+ {
+  "id": "shifa-tameer-e-millat-university",
+  "name": "Shifa Tameer-e-Millat University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "stmu.edu.pk"
+  ]
+ },
+ {
+  "id": "sir-syed-university-of-engineering-and-technology",
+  "name": "Sir Syed University of Engineering and Technology",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ssuet.edu.pk"
+  ]
+ },
+ {
+  "id": "stanford-university",
+  "name": "Stanford University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "stanford.edu"
+  ]
+ },
+ {
+  "id": "sukkur-iba-university",
+  "name": "Sukkur IBA University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "iba-suk.edu.pk"
+  ]
+ },
+ {
+  "id": "superior-university",
+  "name": "Superior University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "superior.edu.pk"
+  ]
+ },
+ {
+  "id": "szabist",
+  "name": "SZABIST",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "szabist.edu.pk"
+  ]
+ },
+ {
+  "id": "technical-university-of-munich",
+  "name": "Technical University of Munich",
+  "country": "Germany",
+  "type": "university",
+  "domains": [
+   "tum.de"
+  ]
+ },
+ {
+  "id": "texas-a-m-university",
+  "name": "Texas A&M University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "tamu.edu"
+  ]
+ },
+ {
+  "id": "the-city-school",
+  "name": "The City School",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "the-educators",
+  "name": "The Educators",
+  "country": "Pakistan",
+  "type": "school",
+  "domains": []
+ },
+ {
+  "id": "trinity-college-dublin",
+  "name": "Trinity College Dublin",
+  "country": "Ireland",
+  "type": "university",
+  "domains": [
+   "tcd.ie"
+  ]
+ },
+ {
+  "id": "tsinghua-university",
+  "name": "Tsinghua University",
+  "country": "China",
+  "type": "university",
+  "domains": [
+   "tsinghua.edu.cn"
+  ]
+ },
+ {
+  "id": "united-arab-emirates-university",
+  "name": "United Arab Emirates University",
+  "country": "United Arab Emirates",
+  "type": "university",
+  "domains": [
+   "uaeu.ac.ae"
+  ]
+ },
+ {
+  "id": "university-college-london-ucl",
+  "name": "University College London (UCL)",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "ucl.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-agriculture-faisalabad",
+  "name": "University of Agriculture, Faisalabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uaf.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-alberta",
+  "name": "University of Alberta",
+  "country": "Canada",
+  "type": "university",
+  "domains": [
+   "ualberta.ca"
+  ]
+ },
+ {
+  "id": "university-of-amsterdam",
+  "name": "University of Amsterdam",
+  "country": "Netherlands",
+  "type": "university",
+  "domains": [
+   "uva.nl"
+  ]
+ },
+ {
+  "id": "university-of-auckland",
+  "name": "University of Auckland",
+  "country": "New Zealand",
+  "type": "university",
+  "domains": [
+   "auckland.ac.nz"
+  ]
+ },
+ {
+  "id": "university-of-azad-jammu-and-kashmir",
+  "name": "University of Azad Jammu and Kashmir",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ajku.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-balochistan",
+  "name": "University of Balochistan",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uob.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-birmingham",
+  "name": "University of Birmingham",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "bham.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-bristol",
+  "name": "University of Bristol",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "bristol.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-british-columbia",
+  "name": "University of British Columbia",
+  "country": "Canada",
+  "type": "university",
+  "domains": [
+   "ubc.ca"
+  ]
+ },
+ {
+  "id": "university-of-california-berkeley",
+  "name": "University of California, Berkeley",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "berkeley.edu"
+  ]
+ },
+ {
+  "id": "university-of-california-davis",
+  "name": "University of California, Davis",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "ucdavis.edu"
+  ]
+ },
+ {
+  "id": "university-of-california-los-angeles-ucla",
+  "name": "University of California, Los Angeles (UCLA)",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "ucla.edu"
+  ]
+ },
+ {
+  "id": "university-of-california-san-diego",
+  "name": "University of California, San Diego",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "ucsd.edu"
+  ]
+ },
+ {
+  "id": "university-of-cambridge",
+  "name": "University of Cambridge",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "cam.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-cape-town",
+  "name": "University of Cape Town",
+  "country": "South Africa",
+  "type": "university",
+  "domains": [
+   "uct.ac.za"
+  ]
+ },
+ {
+  "id": "university-of-central-punjab-ucp",
+  "name": "University of Central Punjab (UCP)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ucp.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-colombo",
+  "name": "University of Colombo",
+  "country": "Sri Lanka",
+  "type": "university",
+  "domains": [
+   "cmb.ac.lk"
+  ]
+ },
+ {
+  "id": "university-of-copenhagen",
+  "name": "University of Copenhagen",
+  "country": "Denmark",
+  "type": "university",
+  "domains": [
+   "ku.dk"
+  ]
+ },
+ {
+  "id": "university-of-dhaka",
+  "name": "University of Dhaka",
+  "country": "Bangladesh",
+  "type": "university",
+  "domains": [
+   "du.ac.bd"
+  ]
+ },
+ {
+  "id": "university-of-edinburgh",
+  "name": "University of Edinburgh",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "ed.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-education-lahore",
+  "name": "University of Education, Lahore",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "ue.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-engineering-and-technology-uet-lahore",
+  "name": "University of Engineering and Technology (UET), Lahore",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uet.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-engineering-and-technology-peshawar",
+  "name": "University of Engineering and Technology, Peshawar",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uetpeshawar.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-faisalabad",
+  "name": "University of Faisalabad",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "tuf.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-glasgow",
+  "name": "University of Glasgow",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "gla.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-gujrat",
+  "name": "University of Gujrat",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uog.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-haripur",
+  "name": "University of Haripur",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uoh.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-helsinki",
+  "name": "University of Helsinki",
+  "country": "Finland",
+  "type": "university",
+  "domains": [
+   "helsinki.fi"
+  ]
+ },
+ {
+  "id": "university-of-hong-kong",
+  "name": "University of Hong Kong",
+  "country": "China",
+  "type": "university",
+  "domains": [
+   "hku.hk"
+  ]
+ },
+ {
+  "id": "university-of-illinois-urbana-champaign",
+  "name": "University of Illinois Urbana-Champaign",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "illinois.edu"
+  ]
+ },
+ {
+  "id": "university-of-karachi",
+  "name": "University of Karachi",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uok.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-lagos",
+  "name": "University of Lagos",
+  "country": "Nigeria",
+  "type": "university",
+  "domains": [
+   "unilag.edu.ng"
+  ]
+ },
+ {
+  "id": "university-of-lahore-uol",
+  "name": "University of Lahore (UOL)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uol.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-leeds",
+  "name": "University of Leeds",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "leeds.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-malakand",
+  "name": "University of Malakand",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uom.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-malaya",
+  "name": "University of Malaya",
+  "country": "Malaysia",
+  "type": "university",
+  "domains": [
+   "um.edu.my"
+  ]
+ },
+ {
+  "id": "university-of-management-and-technology-umt",
+  "name": "University of Management and Technology (UMT)",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "umt.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-manchester",
+  "name": "University of Manchester",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "manchester.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-maryland",
+  "name": "University of Maryland",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "umd.edu"
+  ]
+ },
+ {
+  "id": "university-of-melbourne",
+  "name": "University of Melbourne",
+  "country": "Australia",
+  "type": "university",
+  "domains": [
+   "unimelb.edu.au"
+  ]
+ },
+ {
+  "id": "university-of-michigan",
+  "name": "University of Michigan",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "umich.edu"
+  ]
+ },
+ {
+  "id": "university-of-nairobi",
+  "name": "University of Nairobi",
+  "country": "Kenya",
+  "type": "university",
+  "domains": [
+   "uonbi.ac.ke"
+  ]
+ },
+ {
+  "id": "university-of-new-south-wales-unsw",
+  "name": "University of New South Wales (UNSW)",
+  "country": "Australia",
+  "type": "university",
+  "domains": [
+   "unsw.edu.au"
+  ]
+ },
+ {
+  "id": "university-of-nottingham",
+  "name": "University of Nottingham",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "nottingham.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-oslo",
+  "name": "University of Oslo",
+  "country": "Norway",
+  "type": "university",
+  "domains": [
+   "uio.no"
+  ]
+ },
+ {
+  "id": "university-of-oxford",
+  "name": "University of Oxford",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "ox.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-pennsylvania",
+  "name": "University of Pennsylvania",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "upenn.edu"
+  ]
+ },
+ {
+  "id": "university-of-peshawar",
+  "name": "University of Peshawar",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uop.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-sargodha",
+  "name": "University of Sargodha",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uos.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-sheffield",
+  "name": "University of Sheffield",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "sheffield.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-sindh",
+  "name": "University of Sindh",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "usindh.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-southampton",
+  "name": "University of Southampton",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "soton.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-southern-california",
+  "name": "University of Southern California",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "usc.edu"
+  ]
+ },
+ {
+  "id": "university-of-sydney",
+  "name": "University of Sydney",
+  "country": "Australia",
+  "type": "university",
+  "domains": [
+   "sydney.edu.au"
+  ]
+ },
+ {
+  "id": "university-of-s-o-paulo",
+  "name": "University of São Paulo",
+  "country": "Brazil",
+  "type": "university",
+  "domains": [
+   "usp.br"
+  ]
+ },
+ {
+  "id": "university-of-texas-at-austin",
+  "name": "University of Texas at Austin",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "utexas.edu"
+  ]
+ },
+ {
+  "id": "university-of-the-punjab",
+  "name": "University of the Punjab",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "pu.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-the-witwatersrand",
+  "name": "University of the Witwatersrand",
+  "country": "South Africa",
+  "type": "university",
+  "domains": [
+   "wits.ac.za"
+  ]
+ },
+ {
+  "id": "university-of-tokyo",
+  "name": "University of Tokyo",
+  "country": "Japan",
+  "type": "university",
+  "domains": [
+   "u-tokyo.ac.jp"
+  ]
+ },
+ {
+  "id": "university-of-toronto",
+  "name": "University of Toronto",
+  "country": "Canada",
+  "type": "university",
+  "domains": [
+   "utoronto.ca"
+  ]
+ },
+ {
+  "id": "university-of-veterinary-and-animal-sciences",
+  "name": "University of Veterinary and Animal Sciences",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uvas.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-virginia",
+  "name": "University of Virginia",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "virginia.edu"
+  ]
+ },
+ {
+  "id": "university-of-wah",
+  "name": "University of Wah",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "uow.edu.pk"
+  ]
+ },
+ {
+  "id": "university-of-warwick",
+  "name": "University of Warwick",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "warwick.ac.uk"
+  ]
+ },
+ {
+  "id": "university-of-washington",
+  "name": "University of Washington",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "uw.edu"
+  ]
+ },
+ {
+  "id": "university-of-waterloo",
+  "name": "University of Waterloo",
+  "country": "Canada",
+  "type": "university",
+  "domains": [
+   "uwaterloo.ca"
+  ]
+ },
+ {
+  "id": "university-of-wisconsin-madison",
+  "name": "University of Wisconsin–Madison",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "wisc.edu"
+  ]
+ },
+ {
+  "id": "university-of-york",
+  "name": "University of York",
+  "country": "United Kingdom",
+  "type": "university",
+  "domains": [
+   "york.ac.uk"
+  ]
+ },
+ {
+  "id": "uppsala-university",
+  "name": "Uppsala University",
+  "country": "Sweden",
+  "type": "university",
+  "domains": [
+   "uu.se"
+  ]
+ },
+ {
+  "id": "virtual-university-of-pakistan",
+  "name": "Virtual University of Pakistan",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "vu.edu.pk"
+  ]
+ },
+ {
+  "id": "women-university-multan",
+  "name": "Women University Multan",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "wum.edu.pk"
+  ]
+ },
+ {
+  "id": "yale-university",
+  "name": "Yale University",
+  "country": "United States",
+  "type": "university",
+  "domains": [
+   "yale.edu"
+  ]
+ },
+ {
+  "id": "ziauddin-university",
+  "name": "Ziauddin University",
+  "country": "Pakistan",
+  "type": "university",
+  "domains": [
+   "zu.edu.pk"
+  ]
+ }
+]

@@ -1,3 +1,4 @@
+import { RequiredMark } from "@/components/required-mark";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
@@ -411,7 +412,7 @@ export function SosPage() {
           <form onSubmit={handleCreateSos} className="space-y-4 py-2">
             <div>
               <label className="block text-xs font-medium text-muted-foreground mb-1">
-                Question / Problem Summary *
+                Question / Problem Summary<RequiredMark />
               </label>
               <Input aria-label="e.g. Need help debugging recursion stack overflow before 11 PM"
                 value={newTitle}
@@ -526,7 +527,7 @@ export function SosPage() {
             <form onSubmit={handleOfferHelp} className="space-y-4 py-2">
               <div>
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  How can you assist? *
+                  How can you assist?<RequiredMark />
                 </label>
                 <Textarea
                   value={offerNote}

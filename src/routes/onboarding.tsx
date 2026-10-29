@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CortexBrand } from "@/components/cortex-logo";
-import { useEffect, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/select";
 import { ArrowRight, X } from "lucide-react";
 import { errorMessage } from "@/services/common";
+import { RequiredMark } from "@/components/required-mark";
+import { CountrySelect } from "@/components/country-select";
+import { InstitutionSelect } from "@/components/institution-select";
+import { validatePersonName } from "@/lib/name-policy";
+import { checkUsernameFormat, cleanUsername } from "@/lib/username-policy";
+import { checkUsernameAvailable } from "@/lib/friends-service";
 import { useAuth, type GradeLevel } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
@@ -92,52 +98,132 @@ function ChipInput({
 
 function OnboardingPage() {
   const navigate = useNavigate();
-  const { updateProfile, profile, user, loading } = useAuth();
+  const { updateProfile, profile, user, loading, emailVerified } = useAuth();
 
-  // Protected route: only signed-in users can onboard.
+  // Protected route: only signed-in users with a verified email can onboard.
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/auth" });
-  }, [loading, user, navigate]);
+    if (loading) return;
+    if (!user) navigate({ to: "/auth" });
+    else if (!emailVerified) navigate({ to: "/verify-email" });
+  }, [loading, user, emailVerified, navigate]);
   const [name, setName] = useState("");
-  const [country, setCountry] = useState("United States");
+  const [username, setUsername] = useState("");
+  const [usernameState, setUsernameState] = useState<"idle" | "checking" | "free" | "taken" | "invalid">("idle");
+  const [usernameMsg, setUsernameMsg] = useState<string | null>(null);
+  const [country, setCountry] = useState("");
   const [institution, setInstitution] = useState("");
-  const [level, setLevel] = useState<GradeLevel>("Undergraduate");
+  const [institutionId, setInstitutionId] = useState<string | null>(null);
+  const [level, setLevel] = useState<GradeLevel | "">("");
   const [semester, setSemester] = useState("");
   const [degree, setDegree] = useState("");
-  const [timezone, setTimezone] = useState("UTC-5 (EST)");
+  const [timezone, setTimezone] = useState("");
   const [bio, setBio] = useState("");
   const [teach, setTeach] = useState<string[]>([]);
   const [learn, setLearn] = useState<string[]>([]);
   const [hours, setHours] = useState<number>(5);
   const [saving, setSaving] = useState(false);
+  const [touched, setTouched] = useState(false);
+
+  // Pre-fill anything we already know (Google sign-ins, returning users)
+  const prefilled = useRef(false);
+  useEffect(() => {
+    if (prefilled.current || loading || !user) return;
+    prefilled.current = true;
+    setName(profile.displayName || user.displayName || "");
+    setUsername(profile.username || "");
+    setCountry(profile.country || "");
+    setInstitution(profile.institution || "");
+    setInstitutionId((profile.institutionId as string | null) ?? null);
+    setLevel((profile.gradeLevel as GradeLevel) || "");
+    setSemester(profile.semesterOrYear || "");
+    setDegree(profile.degreeOrStream || "");
+    setTimezone(profile.timezone || "");
+    setBio(profile.about || "");
+    setTeach(profile.teach || []);
+    setLearn(profile.learn || []);
+    setHours(Number(profile.hoursGoal) || 5);
+  }, [loading, user, profile]);
+
+  // Username: format + reserved words locally, availability against Firestore (debounced, stale answers ignored)
+  const latest = useRef("");
+  useEffect(() => {
+    const clean = cleanUsername(username);
+    latest.current = clean;
+    if (!clean) {
+      setUsernameState("idle");
+      setUsernameMsg(null);
+      return;
+    }
+    const fmt = checkUsernameFormat(clean);
+    if (!fmt.ok) {
+      setUsernameState("invalid");
+      setUsernameMsg(fmt.error ?? null);
+      return;
+    }
+    if (clean === profile.username) {
+      setUsernameState("free");
+      setUsernameMsg(`@${clean} is yours.`);
+      return;
+    }
+    setUsernameState("checking");
+    setUsernameMsg("Checking availability…");
+    const t = setTimeout(async () => {
+      try {
+        const free = await checkUsernameAvailable(clean, user?.uid);
+        if (latest.current !== clean) return;
+        setUsernameState(free ? "free" : "taken");
+        setUsernameMsg(free ? `@${clean} is available!` : `@${clean} is already taken. Try another.`);
+      } catch {
+        if (latest.current === clean) {
+          setUsernameState("idle");
+          setUsernameMsg("Couldn't check right now — we'll check again when you continue.");
+        }
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [username, profile.username, user?.uid]);
+
+  const nameCheck = validatePersonName(name, "full name");
+  const errors = {
+    name: nameCheck.ok ? null : nameCheck.error,
+    username: usernameState === "free" || usernameState === "checking" ? null : (usernameMsg ?? "Choose a username."),
+    country: country ? null : "Select your country.",
+    institution: institution.trim() ? null : "Select your school or university.",
+    level: level ? null : "Select your academic level.",
+    timezone: timezone ? null : "Select your timezone.",
+  };
+  const firstError = Object.values(errors).find(Boolean);
 
   async function save() {
-    if (!name.trim() && !profile.displayName) {
-      toast.error("Please tell us your name.");
+    setTouched(true);
+    if (firstError) {
+      toast.error(firstError);
       return;
     }
     setSaving(true);
     try {
-      // One validated write: updateProfile() whitelists fields and refreshes the search index.
+      // Re-check just before saving: the claim below is transactional, so two people can never end up with one username.
       await updateProfile({
-        displayName: name.trim() || profile.displayName || undefined,
+        displayName: nameCheck.value,
+        username: cleanUsername(username),
         country,
-        institution: institution.trim() || null,
-        gradeLevel: level,
+        institution: institution.trim(),
+        institutionId,
+        gradeLevel: level as GradeLevel,
         semesterOrYear: semester.trim() || null,
         degreeOrStream: degree.trim() || null,
         timezone,
         about: bio.trim() || null,
         teach,
         learn,
-        hoursGoal: hours,
+        hoursGoal: Math.max(1, hours || 5),
         onboarded: true,
       });
 
       toast.success("Profile setup complete!");
       navigate({ to: "/dashboard" });
     } catch (e: unknown) {
-      toast.error(errorMessage(e, "Could not save profile"));
+      toast.error(errorMessage(e, "Couldn't save your profile. Please try again."));
     } finally {
       setSaving(false);
     }
@@ -163,30 +249,77 @@ function OnboardingPage() {
           <Progress value={33} className="mt-4 h-1.5" />
         </div>
         <Card className="mt-6 rounded-lg border-border p-6 shadow-soft">
+          <p className="mb-4 text-xs text-muted-foreground">
+            Fields marked <span className="font-semibold text-destructive">*</span> are required.
+          </p>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <Label>Full name</Label>
-              <Input aria-label="Your name"
+              <Label htmlFor="ob-name">
+                Full name
+                <RequiredMark />
+              </Label>
+              <Input
+                id="ob-name"
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                aria-invalid={touched && !!errors.name}
+                aria-describedby="ob-name-err"
                 className="mt-1.5 rounded-md"
-                placeholder="Your name"
+                placeholder="As on your CNIC / student card"
               />
+              {(touched || name) && errors.name && (
+                <p id="ob-name-err" className="mt-1 text-xs text-destructive">{errors.name}</p>
+              )}
             </div>
             <div>
-              <Label>Country</Label>
-              <Input aria-label="Where you're based"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="mt-1.5 rounded-md"
-                placeholder="Where you're based"
-              />
+              <Label htmlFor="ob-username">
+                Username
+                <RequiredMark />
+              </Label>
+              <div className="relative mt-1.5">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">@</span>
+                <Input
+                  id="ob-username"
+                  autoComplete="username"
+                  maxLength={20}
+                  value={username}
+                  onChange={(e) => setUsername(cleanUsername(e.target.value))}
+                  aria-invalid={usernameState === "taken" || usernameState === "invalid"}
+                  aria-describedby="ob-username-msg"
+                  className="rounded-md pl-7 font-mono text-sm"
+                  placeholder="choose_a_username"
+                />
+              </div>
+              <p
+                id="ob-username-msg"
+                role="status"
+                className={`mt-1 text-xs ${
+                  usernameState === "free"
+                    ? "text-emerald-600 dark:text-emerald-400"
+                    : usernameState === "taken" || usernameState === "invalid"
+                      ? "text-destructive"
+                      : "text-muted-foreground"
+                }`}
+              >
+                {usernameMsg ?? "3–20 letters, numbers or underscores. This is how friends will find you."}
+              </p>
             </div>
             <div>
-              <Label>Grade / Academic Level *</Label>
+              <Label htmlFor="ob-country">
+                Country
+                <RequiredMark />
+              </Label>
+              <CountrySelect id="ob-country" value={country} onChange={setCountry} invalid={touched && !country} />
+            </div>
+            <div>
+              <Label htmlFor="ob-level">
+                Grade / Academic Level
+                <RequiredMark />
+              </Label>
               <Select value={level} onValueChange={(v) => setLevel(v as GradeLevel)}>
-                <SelectTrigger className="mt-1.5 rounded-md">
-                  <SelectValue />
+                <SelectTrigger id="ob-level" className="mt-1.5 rounded-md" aria-invalid={touched && !level}>
+                  <SelectValue placeholder="Select your level" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Matric">Matric (8th - 10th Grade)</SelectItem>
@@ -198,14 +331,23 @@ function OnboardingPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>School / University Name</Label>
-              <Input aria-label="e.g. Stanford University or Lincoln High"
+            <div className="md:col-span-2">
+              <Label htmlFor="ob-institution">
+                School / University
+                <RequiredMark />
+              </Label>
+              <InstitutionSelect
+                id="ob-institution"
                 value={institution}
-                onChange={(e) => setInstitution(e.target.value)}
-                className="mt-1.5 rounded-md"
-                placeholder="e.g. Stanford University or Lincoln High"
+                invalid={touched && !institution.trim()}
+                onChange={(v, inst) => {
+                  setInstitution(v);
+                  setInstitutionId(inst?.id ?? null);
+                }}
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                You can verify your university email later in Settings to get a Verified Student badge.
+              </p>
             </div>
             <div>
               <Label>Semester / Class Year</Label>
@@ -226,9 +368,12 @@ function OnboardingPage() {
               />
             </div>
             <div>
-              <Label>Timezone</Label>
+              <Label htmlFor="ob-tz">
+                Timezone
+                <RequiredMark />
+              </Label>
               <Select value={timezone} onValueChange={setTimezone}>
-                <SelectTrigger className="mt-1.5 rounded-md">
+                <SelectTrigger id="ob-tz" className="mt-1.5 rounded-md" aria-invalid={touched && !timezone}>
                   <SelectValue placeholder="Select Timezone" />
                 </SelectTrigger>
                 <SelectContent>
@@ -287,7 +432,7 @@ function OnboardingPage() {
             <div className="text-xs text-muted-foreground">
               You start with <b className="text-foreground">100 credits</b> to spend on help.
             </div>
-            <Button onClick={save} disabled={saving} className="rounded-md">
+            <Button onClick={save} disabled={saving} className="rounded-md" aria-busy={saving}>
               Continue
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Button>

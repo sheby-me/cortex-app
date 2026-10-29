@@ -13,6 +13,7 @@ import {
   type UserDoc,
 } from "@/services/users";
 import { isUserOnline } from "@/services/common";
+import { checkUsernameFormat } from "./username-policy";
 
 export interface NetworkUser {
   uid: string;
@@ -45,6 +46,8 @@ export function cleanHandle(input: string): string {
 /** Validate username format */
 export function isValidHandle(handle: string): { valid: boolean; reason?: string } {
   const clean = cleanHandle(handle);
+  const policy = checkUsernameFormat(clean);
+  if (!policy.ok) return { valid: false, reason: policy.error };
   if (!clean) return { valid: false, reason: "Username cannot be empty." };
   if (clean.length < 3) return { valid: false, reason: "Username must be at least 3 characters." };
   if (clean.length > 20) return { valid: false, reason: "Username cannot exceed 20 characters." };

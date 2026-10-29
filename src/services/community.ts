@@ -11,6 +11,7 @@
  * Counters are kept consistent by writing the child document and the parent counter in ONE transaction/batch;
  * firestore.rules verifies each counter moves by exactly ±1 and only together with its child document.
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   collection,
   deleteDoc,
@@ -51,6 +52,7 @@ export interface AuthorLite {
   displayName: string;
   username?: string;
   avatarUrl?: string | null;
+  verified?: boolean;
 }
 
 export interface PostDoc {
@@ -89,6 +91,7 @@ const authorLite = (u: Partial<UserDoc> & { uid: string }): AuthorLite =>
     displayName: u.displayName || "Learner",
     username: u.username || undefined,
     avatarUrl: u.avatarUrl ?? null,
+    verified: u.universityVerified === true ? true : undefined,
   }) as AuthorLite;
 
 /** Words + #hashtags used for tag filtering ("#dynamic-programming" and plain words both match). */
@@ -218,9 +221,9 @@ export async function createPost(params: {
   const { author, images = [] } = params;
   const title = params.title.trim();
   const body = (params.body.trim() || title).slice(0, 5000);
-  if (!title) throw new Error("Please enter a title for your post.");
-  if (title.length > 200) throw new Error("Title is too long (max 200 characters).");
-  if (images.length > 4) throw new Error("You can attach up to 4 images.");
+  if (!title) throw new UserError("Please enter a title for your post.");
+  if (title.length > 200) throw new UserError("Title is too long (max 200 characters).");
+  if (images.length > 4) throw new UserError("You can attach up to 4 images.");
 
   const postRef = doc(collection(db, "posts"));
 
@@ -344,7 +347,7 @@ export async function addComment(
 ): Promise<void> {
   const text = body.trim();
   if (!text) return;
-  if (text.length > 2000) throw new Error("Comment is too long (max 2000 characters).");
+  if (text.length > 2000) throw new UserError("Comment is too long (max 2000 characters).");
   const commentRef = doc(collection(db, "posts", post.id, "comments"));
   const batch = writeBatch(db);
   batch.set(commentRef, { authorId: me.uid, author: authorLite(me), body: text, createdAt: serverTimestamp() });

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Bell, Search, Sparkles, LogOut, Loader2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/hooks/use-auth";
+import { CortexHelpDialog } from "@/components/cortex-help";
 import { getUnreadNotificationCount, NOTIFICATION_EVENT } from "@/lib/notifications-store";
 
 export const Route = createFileRoute("/_app")({
@@ -23,6 +24,7 @@ function AppLayout() {
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { user, role, loading, profile, emailVerified, signOut: ctxSignOut } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     const updateCount = () => {
@@ -52,6 +54,11 @@ function AppLayout() {
       navigate({ to: "/admin" });
       return;
     }
+    // Profile creation can't be skipped: a unique username and the required details come first.
+    if (role !== "admin" && (!profile.username || profile.onboarded !== true) && pathname !== "/onboarding") {
+      navigate({ to: "/onboarding" });
+      return;
+    }
     if (role === "student" && profile.tutorStatus === "pending") {
       navigate({ to: "/pending" });
       return;
@@ -62,7 +69,7 @@ function AppLayout() {
     ) {
       navigate({ to: STUDENT_HOME });
     }
-  }, [user, role, loading, emailVerified, pathname, navigate, profile.tutorStatus]);
+  }, [user, role, loading, emailVerified, pathname, navigate, profile.tutorStatus, profile.username, profile.onboarded]);
 
   async function signOut() {
     await ctxSignOut();
@@ -110,11 +117,9 @@ function AppLayout() {
                   )}
                 </Link>
               </Button>
-              <Button asChild size="sm" className="rounded-md">
-                <Link to="/ai">
-                  <Sparkles className="mr-1.5 h-4 w-4" />
-                  Ask AI
-                </Link>
+              <Button size="sm" className="rounded-md" onClick={() => setHelpOpen(true)} aria-haspopup="dialog">
+                <Sparkles className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Ask AI
               </Button>
               <Button
                 onClick={signOut}
@@ -132,6 +137,7 @@ function AppLayout() {
           </main>
         </div>
       </div>
+      <CortexHelpDialog open={helpOpen} onOpenChange={setHelpOpen} />
     </SidebarProvider>
   );
 }

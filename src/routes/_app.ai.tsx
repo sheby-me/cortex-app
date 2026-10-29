@@ -1,3 +1,4 @@
+import { UserError } from "@/lib/friendly-errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import { Card } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import * as Icons from "lucide-react";
 import { aiTools } from "@/lib/ai-tools";
 import { useAuth, type GradeLevel } from "@/hooks/use-auth";
 import { authedFetch } from "@/services/ai";
+import { errorMessage } from "@/services/common";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_app/ai")({
@@ -258,13 +260,13 @@ export function AiPage() {
       try {
         data = JSON.parse(resText);
       } catch {
-        throw new Error(
+        throw new UserError(
           `Server returned non-JSON error (${res.status}). If you attached large files, try attaching a smaller file or text notes.`,
         );
       }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to generate AI response.");
+        throw new UserError(data.error || "Failed to generate AI response.");
       }
 
       const newItem: GenerationItem = {
@@ -281,7 +283,7 @@ export function AiPage() {
       toast.success(`${currentTool.name} response generated!`);
     } catch (err: unknown) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Error connecting to AI service.");
+      toast.error(errorMessage(err, "Error connecting to AI service."));
     } finally {
       setLoading(false);
     }

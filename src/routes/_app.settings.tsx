@@ -49,6 +49,12 @@ import { deleteMyAccountData, uploadAvatar, uploadCover } from "@/services/users
 import { deleteUser, reauthenticateWithPopup } from "firebase/auth";
 import { googleProvider } from "@/integrations/firebase/client";
 import { errorMessage } from "@/services/common";
+import { RequiredMark } from "@/components/required-mark";
+import { StudentVerificationCard } from "@/components/student-verification-card";
+import { ImageCropDialog } from "@/components/image-crop-dialog";
+import { CountrySelect } from "@/components/country-select";
+import { InstitutionSelect } from "@/components/institution-select";
+import { validatePersonName } from "@/lib/name-policy";
 
 export const Route = createFileRoute("/_app/settings")({
   head: () => ({
@@ -76,6 +82,7 @@ export function SettingsPage() {
   const [grade, setGrade] = useState<GradeLevel>(
     (profile.gradeLevel as GradeLevel) || "Undergraduate",
   );
+  const [institutionId, setInstitutionId] = useState<string | null>((profile.institutionId as string | null) ?? null);
   const [institution, setInstitution] = useState(profile.institution || "");
   const [semester, setSemester] = useState(profile.semesterOrYear || "");
   const [degree, setDegree] = useState(profile.degreeOrStream || "");
@@ -90,33 +97,40 @@ export function SettingsPage() {
   const [pendingCover, setPendingCover] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const pickImage = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    maxMb: number,
-    remember: (f: File) => void,
-    preview: (url: string) => void,
-    okMsg: string,
-  ) => {
+  const [crop, setCrop] = useState<{ file: File; kind: "avatar" | "cover" } | null>(null);
+
+  const startCrop = (e: React.ChangeEvent<HTMLInputElement>, kind: "avatar" | "cover") => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      toast.error("Please choose an image file.");
+      toast.error("Please choose an image file (JPG, PNG or WebP).");
       return;
     }
-    if (file.size > maxMb * 1024 * 1024) {
-      toast.error(`File size must be under ${maxMb}MB.`);
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("That image is too large. Please choose one under 15 MB.");
       return;
     }
-    remember(file);
-    preview(URL.createObjectURL(file));
-    toast.success(okMsg);
+    setCrop({ file, kind });
   };
 
-  const handleSettingsAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) =>
-    pickImage(e, 5, setPendingAvatar, setAvatarUrl, "Profile picture ready — save to apply it.");
+  const handleCropped = (cropped: File) => {
+    const c = crop;
+    setCrop(null);
+    if (!c) return;
+    const preview = URL.createObjectURL(cropped);
+    if (c.kind === "avatar") {
+      setPendingAvatar(cropped);
+      setAvatarUrl(preview);
+    } else {
+      setPendingCover(cropped);
+      setCoverImageUrl(preview);
+    }
+    toast.success("Picture ready — save to apply it.");
+  };
 
-  const handleSettingsCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) =>
-    pickImage(e, 8, setPendingCover, setCoverImageUrl, "Cover banner ready — save to apply it.");
+  const handleSettingsAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => startCrop(e, "avatar");
+  const handleSettingsCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => startCrop(e, "cover");
 
   // Username live validation (format locally, availability against Firestore, debounced)
   const cleanedHandle = cleanHandle(username);
@@ -181,6 +195,15 @@ export function SettingsPage() {
       toast.error(handleVal.reason || "Invalid username format.");
       return;
     }
+    const nameCheck = validatePersonName(name, "full name");
+    if (!nameCheck.ok) {
+      toast.error(nameCheck.error ?? "Please enter a valid name.");
+      return;
+    }
+    if (!country || !institution.trim() || !grade || !timezone) {
+      toast.error("Please fill in all required fields (marked with *).");
+      return;
+    }
     if (handleTaken) {
       toast.error(`The username @${cleanedHandle} is already taken by another user.`);
       return;
@@ -195,8 +218,9 @@ export function SettingsPage() {
 
       // The username is claimed in a transaction (usernames/{handle}) so two people can never share one.
       await updateProfile({
-        displayName: name,
+        displayName: nameCheck.value,
         username: cleanedHandle,
+        institutionId,
         avatarUrl: newAvatar,
         coverImageUrl: newCover,
         gradeLevel: grade,
@@ -408,8 +432,9 @@ export function SettingsPage() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <Label className="text-xs font-semibold">Full Name *</Label>
+            <Label htmlFor="st-name" className="text-xs font-semibold">Full Name<RequiredMark /></Label>
             <Input
+              id="st-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-1.5 rounded-xl"
@@ -418,7 +443,7 @@ export function SettingsPage() {
 
           <div>
             <Label className="text-xs font-semibold flex items-center justify-between">
-              <span>Unique ID / Username (@handle) *</span>
+              <span>Unique ID / Username (@handle)<RequiredMark /></span>
               {handleVal.valid && !handleTaken && (
                 <span className="text-xs font-normal text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                   <Check className="h-3 w-3" /> Available
@@ -458,7 +483,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Email Address *</Label>
+            <Label className="text-xs font-semibold">Email Address</Label>
             <Input
               value={email}
               readOnly
@@ -470,7 +495,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Grade / Academic Level *</Label>
+            <Label className="text-xs font-semibold">Grade / Academic Level<RequiredMark /></Label>
             <Select value={grade} onValueChange={(v) => setGrade(v as GradeLevel)}>
               <SelectTrigger className="mt-1.5 rounded-xl">
                 <SelectValue />
@@ -490,17 +515,19 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Institution / University *</Label>
-            <Input aria-label="e.g. Stanford University"
+            <Label htmlFor="st-institution" className="text-xs font-semibold">Institution / University<RequiredMark /></Label>
+            <InstitutionSelect
+              id="st-institution"
               value={institution}
-              onChange={(e) => setInstitution(e.target.value)}
-              placeholder="e.g. Stanford University"
-              className="mt-1.5 rounded-xl"
+              onChange={(v, inst) => {
+                setInstitution(v);
+                setInstitutionId(inst?.id ?? null);
+              }}
             />
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Semester / Class Year *</Label>
+            <Label className="text-xs font-semibold">Semester / Class Year</Label>
             <Input aria-label="e.g. Semester 4 (2025)"
               value={semester}
               onChange={(e) => setSemester(e.target.value)}
@@ -510,7 +537,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Degree OR Science/Arts Stream *</Label>
+            <Label className="text-xs font-semibold">Degree OR Science/Arts Stream</Label>
             <Input aria-label="e.g. BS Computer Science OR Science Stream"
               value={degree}
               onChange={(e) => setDegree(e.target.value)}
@@ -520,16 +547,12 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Country</Label>
-            <Input
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className="mt-1.5 rounded-xl"
-            />
+            <Label htmlFor="st-country" className="text-xs font-semibold">Country<RequiredMark /></Label>
+            <CountrySelect id="st-country" value={country} onChange={setCountry} />
           </div>
 
           <div>
-            <Label className="text-xs font-semibold">Timezone</Label>
+            <Label className="text-xs font-semibold">Timezone<RequiredMark /></Label>
             <Select value={timezone} onValueChange={setTimezone}>
               <SelectTrigger className="mt-1.5 rounded-xl">
                 <SelectValue placeholder="Select Timezone" />
@@ -560,6 +583,16 @@ export function SettingsPage() {
           </div>
         </div>
       </Card>
+
+
+      {/* Student verification */}
+      <StudentVerificationCard
+        verified={!!profile.universityVerified}
+        verifiedName={(profile.verifiedUniversityName as string | null) ?? null}
+        institutionName={profile.institution || ""}
+        institutionId={(profile.institutionId as string | null) ?? null}
+        accountEmail={profile.email || ""}
+      />
 
       {/* Preferences Section */}
       <Card className="rounded-3xl border-border p-6 shadow-soft space-y-4">
@@ -819,6 +852,17 @@ export function SettingsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ImageCropDialog
+        file={crop?.file ?? null}
+        aspect={crop?.kind === "avatar" ? 1 : 3.2}
+        outputWidth={crop?.kind === "avatar" ? 512 : 1600}
+        maxBytes={crop?.kind === "avatar" ? 150_000 : 450_000}
+        round={crop?.kind === "avatar"}
+        title={crop?.kind === "avatar" ? "Adjust your profile picture" : "Adjust your cover banner"}
+        onCancel={() => setCrop(null)}
+        onDone={handleCropped}
+      />
     </div>
   );
 }

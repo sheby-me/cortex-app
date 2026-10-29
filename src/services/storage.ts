@@ -9,6 +9,7 @@
  *   groups/{groupId}/{file}           shared group files    (images/pdf, <= 15 MB)
  *   tutor-proofs/{uid}/{file}         degree proof uploads  (images/pdf, <= 10 MB; owner + admin only)
  */
+import { UserError } from "@/lib/friendly-errors";
 import {
   deleteObject,
   getDownloadURL,
@@ -50,10 +51,10 @@ export async function uploadFile(opts: UploadOptions): Promise<UploadResult> {
   const contentType = file.type || "application/octet-stream";
 
   if (!allowedTypes.includes(contentType)) {
-    throw new Error("That file type isn't supported.");
+    throw new UserError("That file type isn't supported.");
   }
   if (file.size > maxBytes) {
-    throw new Error(`File is too large. Maximum size is ${Math.round(maxBytes / 1024 / 1024)} MB.`);
+    throw new UserError(`File is too large. Maximum size is ${Math.round(maxBytes / 1024 / 1024)} MB.`);
   }
 
   const path = `${folder}/${Date.now()}-${name}`;

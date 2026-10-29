@@ -2,6 +2,7 @@
  * Shared helpers for the Firestore service layer.
  * Nothing in here touches the network; it is safe to import anywhere.
  */
+import { friendlyMessage } from "@/lib/friendly-errors";
 import { Timestamp, type DocumentData, type QueryDocumentSnapshot } from "firebase/firestore";
 
 /** Any value Firestore may hand back for a timestamp field (pending serverTimestamp() is null). */
@@ -57,33 +58,12 @@ export function stripUndefined<T extends object>(obj: T): T {
   return out as T;
 }
 
-/** Turn any thrown value into a message that is safe to show in a toast. */
+/** Turn any thrown value into a message that is safe to show in a toast (details go to the console only). */
 export function errorMessage(err: unknown, fallback = "Something went wrong. Please try again."): string {
-  if (!err) return fallback;
-  const code = (err as { code?: string }).code;
-  switch (code) {
-    case "permission-denied":
-      return "You don't have permission to do that.";
-    case "unavailable":
-      return "You appear to be offline. Please check your connection and try again.";
-    case "not-found":
-      return "That item no longer exists.";
-    case "already-exists":
-      return "That item already exists.";
-    case "resource-exhausted":
-      return "Too many requests right now. Please wait a moment and retry.";
-    case "storage/unauthorized":
-      return "You don't have permission to upload that file.";
-    case "storage/canceled":
-      return "Upload cancelled.";
-    case "storage/quota-exceeded":
-      return "Storage quota exceeded. Please contact support.";
-    default:
-      break;
-  }
-  if (err instanceof Error && err.message) return err.message;
-  return fallback;
+  return friendlyMessage(err, fallback);
 }
+
+export { UserError } from "@/lib/friendly-errors";
 
 /** A user counts as online if the flag is set AND the heartbeat is recent (tab crashes never clear the flag). */
 export const ONLINE_STALE_MS = 150_000;

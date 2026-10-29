@@ -1,3 +1,5 @@
+import { RequiredMark } from "@/components/required-mark";
+import { UserError } from "@/lib/friendly-errors";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -468,7 +470,7 @@ export function QuizPage() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Failed to generate AI quiz.");
+        throw new UserError(data.error || "Failed to generate AI quiz.");
       }
 
       const questions = parseAIQuizText(data.text);
@@ -497,7 +499,7 @@ export function QuizPage() {
       toast.success(`Generated 5-question quiz for "${topic}"!`);
     } catch (err: unknown) {
       console.error(err);
-      toast.error(err instanceof Error ? err.message : "Error creating AI quiz.");
+      toast.error(errorMessage(err, "Error creating AI quiz."));
     } finally {
       setLoading(false);
     }
@@ -569,7 +571,7 @@ export function QuizPage() {
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
-                  Topic / Subtopic *
+                  Topic / Subtopic<RequiredMark />
                 </label>
                 <Input aria-label="e.g. Binary Search Trees, Cell Biology, World War II"
                   value={topic}
