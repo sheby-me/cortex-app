@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -151,6 +152,9 @@ function RootComponent() {
       <AuthProvider>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        {/* Without a mounted <Toaster /> every toast.success / toast.error in the app is silently discarded —
+            including the validation and save errors on /onboarding, which made its Continue button look dead. */}
+        <Toaster position="top-center" richColors closeButton />
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -18,7 +18,6 @@ import {
   deleteDoc,
   deleteField,
   doc,
-  documentId,
   getDoc,
   getDocs,
   increment,
@@ -120,31 +119,34 @@ export function subscribeGroups(
     err,
   );
 
-  let privateUnsubs: Unsubscribe[] = [];
+  // My groups (including private ones): one single-document listener per membership. A list query such as
+  // where(documentId(), "in", ids) cannot be authorised by a rule that checks membership per document, whereas a get on
+  // groups/{id} can — and it also lets us notice instantly when a group is deleted.
+  let docUnsubs: Unsubscribe[] = [];
+  const mineById = new Map<string, Group>();
   const u2 = onSnapshot(
     collection(db, "users", uid, "groups"),
     (snap) => {
       memberOf = new Set(snap.docs.map((d) => d.id));
-      privateUnsubs.forEach((u) => u());
-      privateUnsubs = [];
-      const ids = Array.from(memberOf);
+      docUnsubs.forEach((u) => u());
+      docUnsubs = [];
+      mineById.clear();
       mine = [];
-      if (ids.length === 0) return emit();
-      // Live-listen to my groups in chunks of 10 (Firestore `in` limit-safe).
-      chunk(ids, 10).forEach((part, idx) => {
-        const partResults: Record<number, Group[]> = {};
-        privateUnsubs.push(
+      if (memberOf.size === 0) return emit();
+      for (const gid of memberOf) {
+        docUnsubs.push(
           onSnapshot(
-            query(collection(db, "groups"), where(documentId(), "in", part)),
-            (s) => {
-              partResults[idx] = s.docs.map((d) => ({ ...(d.data({ serverTimestamps: "estimate" }) as GroupDoc), id: d.id }));
-              mine = Object.values(partResults).flat();
+            doc(db, "groups", gid),
+            (g) => {
+              if (g.exists()) mineById.set(gid, { ...(g.data({ serverTimestamps: "estimate" }) as GroupDoc), id: gid });
+              else mineById.delete(gid);
+              mine = Array.from(mineById.values());
               emit();
             },
             err,
           ),
         );
-      });
+      }
     },
     err,
   );
@@ -152,7 +154,7 @@ export function subscribeGroups(
   return () => {
     u1();
     u2();
-    privateUnsubs.forEach((u) => u());
+    docUnsubs.forEach((u) => u());
   };
 }
 

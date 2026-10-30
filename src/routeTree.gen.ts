@@ -15,6 +15,9 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PendingRouteImport } from './routes/pending'
+import { Route as VerifyEmailRouteImport } from './routes/verify-email'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as AppAchievementsRouteImport } from './routes/_app.achievements'
 import { Route as AppAiRouteImport } from './routes/_app.ai'
 import { Route as AppBuddyRouteImport } from './routes/_app.buddy'
@@ -31,6 +34,7 @@ import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppSosRouteImport } from './routes/_app.sos'
 import { Route as AppTeacherRouteImport } from './routes/_app.teacher'
 import { Route as AppTutorsRouteImport } from './routes/_app.tutors'
+import { Route as AppUUsernameRouteImport } from './routes/_app.u.$username'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -59,6 +63,21 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const PendingRoute = PendingRouteImport.update({
   id: '/pending',
   path: '/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyEmailRoute = VerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppAchievementsRoute = AppAchievementsRouteImport.update({
@@ -136,6 +155,11 @@ const AppTeacherRoute = AppTeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => AppRoute,
 } as any)
+const AppUUsernameRoute = AppUUsernameRouteImport.update({
+  id: '/u/$username',
+  path: '/u/$username',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppTutorsRoute = AppTutorsRouteImport.update({
   id: '/tutors',
   path: '/tutors',
@@ -148,6 +172,9 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/terms': typeof TermsRoute
+  '/privacy': typeof PrivacyRoute
   '/achievements': typeof AppAchievementsRoute
   '/ai': typeof AppAiRoute
   '/buddy': typeof AppBuddyRoute
@@ -164,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/sos': typeof AppSosRoute
   '/teacher': typeof AppTeacherRoute
   '/tutors': typeof AppTutorsRoute
+  '/u/$username': typeof AppUUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -171,6 +199,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/terms': typeof TermsRoute
+  '/privacy': typeof PrivacyRoute
   '/achievements': typeof AppAchievementsRoute
   '/ai': typeof AppAiRoute
   '/buddy': typeof AppBuddyRoute
@@ -187,6 +218,7 @@ export interface FileRoutesByTo {
   '/sos': typeof AppSosRoute
   '/teacher': typeof AppTeacherRoute
   '/tutors': typeof AppTutorsRoute
+  '/u/$username': typeof AppUUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,6 +228,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
+  '/verify-email': typeof VerifyEmailRoute
+  '/terms': typeof TermsRoute
+  '/privacy': typeof PrivacyRoute
   '/_app/achievements': typeof AppAchievementsRoute
   '/_app/ai': typeof AppAiRoute
   '/_app/buddy': typeof AppBuddyRoute
@@ -212,6 +247,7 @@ export interface FileRoutesById {
   '/_app/sos': typeof AppSosRoute
   '/_app/teacher': typeof AppTeacherRoute
   '/_app/tutors': typeof AppTutorsRoute
+  '/_app/u/$username': typeof AppUUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +257,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/pending'
+    | '/verify-email'
+    | '/terms'
+    | '/privacy'
     | '/achievements'
     | '/ai'
     | '/buddy'
@@ -237,6 +276,7 @@ export interface FileRouteTypes {
     | '/sos'
     | '/teacher'
     | '/tutors'
+    | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -244,6 +284,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/pending'
+    | '/verify-email'
+    | '/terms'
+    | '/privacy'
     | '/achievements'
     | '/ai'
     | '/buddy'
@@ -260,6 +303,7 @@ export interface FileRouteTypes {
     | '/sos'
     | '/teacher'
     | '/tutors'
+    | '/u/$username'
   id:
     | '__root__'
     | '/'
@@ -268,6 +312,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/onboarding'
     | '/pending'
+    | '/verify-email'
+    | '/terms'
+    | '/privacy'
     | '/_app/achievements'
     | '/_app/ai'
     | '/_app/buddy'
@@ -284,6 +331,7 @@ export interface FileRouteTypes {
     | '/_app/sos'
     | '/_app/teacher'
     | '/_app/tutors'
+    | '/_app/u/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -293,6 +341,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   OnboardingRoute: typeof OnboardingRoute
   PendingRoute: typeof PendingRoute
+  VerifyEmailRoute: typeof VerifyEmailRoute
+  TermsRoute: typeof TermsRoute
+  PrivacyRoute: typeof PrivacyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -337,6 +388,27 @@ declare module '@tanstack/react-router' {
       path: '/pending'
       fullPath: '/pending'
       preLoaderRoute: typeof PendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-email': {
+      id: '/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof VerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/achievements': {
@@ -451,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTutorsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/u/$username': {
+      id: '/_app/u/$username'
+      path: '/u/$username'
+      fullPath: '/u/$username'
+      preLoaderRoute: typeof AppUUsernameRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -471,6 +550,7 @@ interface AppRouteChildren {
   AppSosRoute: typeof AppSosRoute
   AppTeacherRoute: typeof AppTeacherRoute
   AppTutorsRoute: typeof AppTutorsRoute
+  AppUUsernameRoute: typeof AppUUsernameRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
@@ -490,6 +570,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppSosRoute: AppSosRoute,
   AppTeacherRoute: AppTeacherRoute,
   AppTutorsRoute: AppTutorsRoute,
+  AppUUsernameRoute: AppUUsernameRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
@@ -501,6 +582,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   OnboardingRoute: OnboardingRoute,
   PendingRoute: PendingRoute,
+  VerifyEmailRoute: VerifyEmailRoute,
+  TermsRoute: TermsRoute,
+  PrivacyRoute: PrivacyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

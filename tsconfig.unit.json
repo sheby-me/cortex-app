@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "outDir": ".test-build",
+    "rootDir": "src"
+  },
+  "include": [
+    "src/lib/name-policy.ts",
+    "src/lib/username-policy.ts",
+    "src/lib/email-policy.ts",
+    "src/lib/friendly-errors.ts",
+    "src/lib/safe-url.ts",
+    "src/lib/app-guide.ts",
+    "src/lib/onboarding-policy.ts",
+    "src/data/universities.ts"
+  ]
+}

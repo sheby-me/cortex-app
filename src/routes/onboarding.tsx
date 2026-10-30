@@ -20,8 +20,8 @@ import { errorMessage } from "@/services/common";
 import { RequiredMark } from "@/components/required-mark";
 import { CountrySelect } from "@/components/country-select";
 import { InstitutionSelect } from "@/components/institution-select";
-import { validatePersonName } from "@/lib/name-policy";
 import { checkUsernameFormat, cleanUsername } from "@/lib/username-policy";
+import { buildOnboardingUpdate, validateOnboarding, type OnboardingField } from "@/lib/onboarding-policy";
 import { checkUsernameAvailable } from "@/lib/friends-service";
 import { useAuth, type GradeLevel } from "@/hooks/use-auth";
 import { toast } from "sonner";
@@ -183,47 +183,66 @@ function OnboardingPage() {
     return () => clearTimeout(t);
   }, [username, profile.username, user?.uid]);
 
-  const nameCheck = validatePersonName(name, "full name");
-  const errors = {
-    name: nameCheck.ok ? null : nameCheck.error,
-    username: usernameState === "free" || usernameState === "checking" ? null : (usernameMsg ?? "Choose a username."),
-    country: country ? null : "Select your country.",
-    institution: institution.trim() ? null : "Select your school or university.",
-    level: level ? null : "Select your academic level.",
-    timezone: timezone ? null : "Select your timezone.",
+  const { errors, firstInvalid, firstError } = validateOnboarding({
+    name,
+    username,
+    usernameState,
+    usernameMessage: usernameMsg,
+    country,
+    institution,
+    level,
+    timezone,
+  });
+  // Errors from the save itself stay on screen (a toast alone disappears) so the page never looks unresponsive.
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  const FIELD_IDS: Record<OnboardingField, string> = {
+    name: "ob-name",
+    username: "ob-username",
+    country: "ob-country",
+    level: "ob-level",
+    institution: "ob-institution",
+    timezone: "ob-tz",
   };
-  const firstError = Object.values(errors).find(Boolean);
 
   async function save() {
+    if (saving) return;
     setTouched(true);
-    if (firstError) {
-      toast.error(firstError);
+    setSaveError(null);
+    if (firstInvalid) {
+      // Tell the user exactly what's missing and put the cursor there.
+      setSaveError(firstError);
+      toast.error(firstError ?? "Please complete the required fields.");
+      document.getElementById(FIELD_IDS[firstInvalid])?.focus();
       return;
     }
     setSaving(true);
     try {
-      // Re-check just before saving: the claim below is transactional, so two people can never end up with one username.
-      await updateProfile({
-        displayName: nameCheck.value,
-        username: cleanUsername(username),
-        country,
-        institution: institution.trim(),
-        institutionId,
-        gradeLevel: level as GradeLevel,
-        semesterOrYear: semester.trim() || null,
-        degreeOrStream: degree.trim() || null,
-        timezone,
-        about: bio.trim() || null,
-        teach,
-        learn,
-        hoursGoal: Math.max(1, hours || 5),
-        onboarded: true,
-      });
-
+      // The username is claimed in a transaction (usernames/{handle}), so two people can never end up with the same one.
+      await updateProfile(
+        buildOnboardingUpdate({
+          name,
+          username,
+          country,
+          institution,
+          institutionId,
+          level,
+          semester,
+          degree,
+          timezone,
+          bio,
+          teach,
+          learn,
+          hours,
+        }) as Parameters<typeof updateProfile>[0],
+      );
+      // updateProfile resolves only after Firestore has acknowledged the write, so "onboarded" is really saved.
       toast.success("Profile setup complete!");
       navigate({ to: "/dashboard" });
     } catch (e: unknown) {
-      toast.error(errorMessage(e, "Couldn't save your profile. Please try again."));
+      const msg = errorMessage(e, "Couldn't save your profile. Please check your connection and try again.");
+      setSaveError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -311,6 +330,7 @@ function OnboardingPage() {
                 <RequiredMark />
               </Label>
               <CountrySelect id="ob-country" value={country} onChange={setCountry} invalid={touched && !country} />
+              {touched && errors.country && <p className="mt-1 text-xs text-destructive">{errors.country}</p>}
             </div>
             <div>
               <Label htmlFor="ob-level">
@@ -330,6 +350,7 @@ function OnboardingPage() {
                   <SelectItem value="Phd">Phd (Doctoral / Research)</SelectItem>
                 </SelectContent>
               </Select>
+              {touched && errors.level && <p className="mt-1 text-xs text-destructive">{errors.level}</p>}
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="ob-institution">
@@ -345,6 +366,7 @@ function OnboardingPage() {
                   setInstitutionId(inst?.id ?? null);
                 }}
               />
+              {touched && errors.institution && <p className="mt-1 text-xs text-destructive">{errors.institution}</p>}
               <p className="mt-1 text-xs text-muted-foreground">
                 You can verify your university email later in Settings to get a Verified Student badge.
               </p>
@@ -391,6 +413,7 @@ function OnboardingPage() {
                   <SelectItem value="UTC+9 (JST)">UTC+9 (JST, Japan Standard Time)</SelectItem>
                 </SelectContent>
               </Select>
+              {touched && errors.timezone && <p className="mt-1 text-xs text-destructive">{errors.timezone}</p>}
             </div>
             <div>
               <Label>Weekly study hours goal</Label>
@@ -428,13 +451,19 @@ function OnboardingPage() {
             />
           </div>
 
+          {saveError && (
+            <div role="alert" className="mt-6 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+              {saveError}
+            </div>
+          )}
+
           <div className="mt-6 flex items-center justify-between">
             <div className="text-xs text-muted-foreground">
               You start with <b className="text-foreground">100 credits</b> to spend on help.
             </div>
             <Button onClick={save} disabled={saving} className="rounded-md" aria-busy={saving}>
-              Continue
-              <ArrowRight className="ml-1.5 h-4 w-4" />
+              {saving ? "Saving…" : "Continue"}
+              {!saving && <ArrowRight className="ml-1.5 h-4 w-4" />}
             </Button>
           </div>
         </Card>

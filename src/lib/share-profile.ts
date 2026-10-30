@@ -1,4 +1,4 @@
-import { UserError } from "@/lib/friendly-errors";
+import { UserError } from "./friendly-errors";
 
 /** Public profile address, e.g. https://cortex.example/u/ayesha_khan */
 export function profileUrl(username: string | null | undefined): string {

@@ -203,7 +203,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // 1) Session persistence: Firebase restores the signed-in user from IndexedDB; we just observe it.
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      if (u) {
+        // The email_verified flag the security rules check lives in the ID token. A token minted before the user
+        // confirmed their mailbox (e.g. they clicked the link in another browser) keeps saying "false" for up to an hour,
+        // which shows up as "You don't have permission" on every query. Re-read the account and force a fresh token
+        // BEFORE the rest of the app starts querying.
+        try {
+          await u.reload();
+          if (u.emailVerified) await u.getIdToken(true);
+        } catch (err) {
+          console.warn("[Cortex] could not refresh the session token", err);
+        }
+      }
       setUser(u);
       setEmailVerified(!!u?.emailVerified);
       setAuthReady(true);
